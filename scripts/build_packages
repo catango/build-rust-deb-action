@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -eu
-ls -l
+cat global.env
 . ./global.env
 
 # Adapted from pbuilder's and sbuild's support for cross-building:
