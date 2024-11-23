@@ -16,6 +16,7 @@ fi
 
 if [ -n "$INPUT_RUST_FEATURES" ]; then
     INPUT_RUST_FEATURES="--features ${INPUT_RUST_FEATURES}"
+fi
 
 cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
