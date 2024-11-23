@@ -64,6 +64,8 @@ rustArch=$(get_rust_arch $(dpkg --print-architecture))
 # download and prepare rustup-init
 url="https://static.rust-lang.org/rustup/archive/1.27.1/${rustArch}/rustup-init"
 wget "$url"
+echo "${rustupSha256}"
+echo "${rustArch}"
 echo "${rustupSha256} *rustup-init" | sha256sum -c -
 chmod +x rustup-init
 
