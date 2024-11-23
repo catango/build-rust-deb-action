@@ -6,7 +6,6 @@ APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
 
 get_rust_arch() {
     local dpkgArch="${1}"
-    local rustArch
     case "${dpkgArch##*-}" in
         amd64) rustArch='x86_64-unknown-linux-gnu'; rustupSha256='6aeece6993e902708983b209d04c0d1dbb14ebb405ddb87def578d41f920f56d' ;;
         armhf) rustArch='armv7-unknown-linux-gnueabihf'; rustupSha256='3c4114923305f1cd3b96ce3454e9e549ad4aa7c07c03aec73d1a785e98388bed' ;;
@@ -16,8 +15,6 @@ get_rust_arch() {
         s390x) rustArch='s390x-unknown-linux-gnu'; rustupSha256='e7f89da453c8ce5771c28279d1a01d5e83541d420695c74ec81a7ec5d287c51c' ;;
         *) echo >&2 "unsupported architecture: ${dpkgArch}"; exit 1 ;;
     esac;
-    export rustupSha256=${rustupSha256}
-    echo ${rustArch}
 }
 
 export DEBIAN_FRONTEND=noninteractive
@@ -34,7 +31,8 @@ if [ -n "$INPUT_HOST_ARCH" ]; then
 	dpkg --add-architecture "$INPUT_HOST_ARCH"
 	INPUT_EXTRA_BUILD_DEPS="$INPUT_EXTRA_BUILD_DEPS crossbuild-essential-$INPUT_HOST_ARCH libc-dev:$INPUT_HOST_ARCH"
 	printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_HOST_ARCH" >>"$APT_CONF_FILE"
-    export RUST_TARGET="--target $(get_rust_arch $INPUT_HOST_ARCH)"
+    get_rust_arch $INPUT_HOST_ARCH
+    export RUST_TARGET="--target rustArch"
 fi
 
 # debconf has priority “required” and is indirectly depended on by some
@@ -58,7 +56,7 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 # https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
 
 # get rust arch for build system architecture
-rustArch=$(get_rust_arch $(dpkg --print-architecture))
+get_rust_arch $(dpkg --print-architecture)
 
 # download and prepare rustup-init
 url="https://static.rust-lang.org/rustup/archive/1.27.1/${rustArch}/rustup-init"
