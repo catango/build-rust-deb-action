@@ -57,7 +57,7 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 # https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
 
 # get rust arch for build system architecture
-rustArch=get_rust_arch $(dpkg --print-architecture) 
+rustArch=$(get_rust_arch $(dpkg --print-architecture))
 
 # download and prepare rustup-init
 url="https://static.rust-lang.org/rustup/archive/1.27.1/${rustArch}/rustup-init"
