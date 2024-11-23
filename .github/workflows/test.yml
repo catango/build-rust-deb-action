@@ -9,30 +9,26 @@ on:
       - README.md
 
 jobs:
+
   apt-opts:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
+        id: build
         with:
           apt-opts: --install-recommends --no-install-suggests
-          buildpackage-opts: --build=binary --no-sign
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   before-build-hook:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -40,127 +36,144 @@ jobs:
             cd test
             dch --maintmaint --newversion 2 "Version 2"
             dch --maintmaint --release ""
-          buildpackage-opts: --build=binary --no-sign
-          extra-build-deps: devscripts
+          host-build-deps: devscripts
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_2_amd64.deb
-          dpkg --contents debian/artifacts/test_2_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_2_amd64.buildinfo
-          test -f debian/artifacts/test_2_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   default-source-dir:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: cp -r test/* .
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          buildpackage-opts: --build=binary --no-sign
+        id: build
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
-
-  different-artifacts-dir:
-    needs: [single-package]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          artifacts-dir: my_artifacts
-          buildpackage-opts: --build=binary --no-sign
-          source-dir: test
-      - run: |
-          dpkg --info my_artifacts/test_1_amd64.deb
-          dpkg --contents my_artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f my_artifacts/test_1_amd64.buildinfo
-          test -f my_artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   different-docker-image:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
+        id: build
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: ubuntu:latest
           source-dir: test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact-ubuntu
+          path: ${{ steps.build.outputs.artifact-dir }}
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
-
-  different-host-arch:
-    needs: [single-package]
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+ 
+  additional-host-build-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
+        id: build
         with:
-          buildpackage-opts: --build=binary --no-sign
-          host-arch: i386
           source-dir: test
+          host-build-deps: cmake gcc
       - run: |
-          dpkg --info debian/artifacts/test_1_i386.deb
-          dpkg --contents debian/artifacts/test_1_i386.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_i386.buildinfo
-          test -f debian/artifacts/test_1_i386.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
-  extra-build-deps:
-    needs: [single-package]
+  additional-target-build-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cat test/Makefile_extra-build-deps >> test/Makefile
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
+        id: build
         with:
-          buildpackage-opts: --build=binary --no-sign
-          # Install an extra package unlikely to be ever installed by default:
-          extra-build-deps: libzt1
+          source-dir: test
+          target-build-deps: libasound2-dev
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact-t1
+          path: ${{ steps.build.outputs.artifact-dir }}
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+
+  different-target-arch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          target-arch: armhf
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_armhf.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+
+  rust-feature:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          source-dir: test
+          rust-features: alsa
+          target-build-deps: libasound2-dev
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact-alsa
+          path: ${{ steps.build.outputs.artifact-dir }}
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+
+
+  different-rust-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          rust-version: 1.79.0
+          source-dir: test
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+
+  additional-rust-buildtools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          host-build-deps: libclang-14-dev
+          rust-buildtools: bindgen-cli 
+          source-dir: test
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   extra-docker-args:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: cat test/Makefile_extra-docker-args >> test/Makefile
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
+        id: build
         with:
-          buildpackage-opts: --build=binary --no-sign
           source-dir: test
           extra-docker-args: --add-host extra-args-test:127.0.0.1
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   extra-repo-keys-ascii:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -177,23 +190,20 @@ jobs:
             printf 'EOF\n'
           } >>"$GITHUB_OUTPUT"
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: test/Dockerfile_extra-repo-keys
           # An output value instead of an environment variable is used here to
           # not interfere with Docker’s environment down the line.
           extra-repo-keys: ${{ steps.download-keys.outputs.debian-archive-keys }}
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   extra-repo-keys-files:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -210,20 +220,18 @@ jobs:
             printf 'EOF\n'
           } >>"$GITHUB_OUTPUT"
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: test/Dockerfile_extra-repo-keys
           # An output value instead of an environment variable is used here to
           # not interfere with Docker’s environment down the line.
           extra-repo-keys: ${{ steps.download-keys.outputs.debian-archive-keys }}
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   extra-repos:
     needs: [setup-hook]
@@ -232,10 +240,10 @@ jobs:
       - uses: actions/checkout@v4
       - run: cat test/Makefile_extra-repos >>test/Makefile
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           extra-repos: |
             # These are intentionally given as two entries:
             deb http://deb.debian.org/debian stable contrib
@@ -246,61 +254,23 @@ jobs:
             ! apt-cache policy | grep -E ' *release.*[ ,]o=Debian[,$$]' | grep -E '[ ,]c=non-free[,$$]'
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
-
-  extra-repos-deb822:
-    needs: [setup-hook]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: cat test/Makefile_extra-repos >>test/Makefile
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          buildpackage-opts: --build=binary --no-sign
-          extra-repos: |
-            # These are intentionally given as two entries:
-            Types: deb
-            URIs: http://deb.debian.org/debian
-            Suites: stable
-            Components: contrib
-
-            Types: deb
-            URIs: http://deb.debian.org/debian
-            Suites: stable
-            Components: non-free
-          setup-hook: |
-            apt-get update # Called here manually only for testing purposes!
-            ! apt-cache policy | grep -E ' *release.*[ ,]o=Debian[,$$]' | grep -E '[ ,]c=contrib[,$$]'
-            ! apt-cache policy | grep -E ' *release.*[ ,]o=Debian[,$$]' | grep -E '[ ,]c=non-free[,$$]'
-          source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   full-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=full --no-sign
           source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1.dsc
-          test -f debian/artifacts/test_1.tar.xz
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact
+          path: ${{ steps.build.outputs.artifact-dir }}
 
   git-as-root-in-hook:
     needs: [before-build-hook]
@@ -308,6 +278,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -318,89 +289,27 @@ jobs:
             rev=$(git rev-parse HEAD)
             dch --maintmaint --newversion "1+$rev" "Version 1+$rev"
             dch --maintmaint --release ""
-          buildpackage-opts: --build=binary --no-sign
-          extra-build-deps: devscripts git
+          host-build-deps: devscripts git
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1+${{ github.sha }}_amd64.deb
-          dpkg --contents debian/artifacts/test_1+${{ github.sha }}_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1+${{ github.sha }}_amd64.buildinfo
-          test -f debian/artifacts/test_1+${{ github.sha }}_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   local-dockerfile:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: cat test/Makefile_local-dockerfile >> test/Makefile
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: test/Dockerfile
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
-
-  multiple-packages:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./
-        with:
-          buildpackage-opts: --build=binary --no-sign
-          source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --info debian/artifacts/test-dbgsym_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          dpkg --contents debian/artifacts/test-dbgsym_1_amd64.deb
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
-
-  # Regression test following issue #3 (“Did not find the .buildinfo file in
-  # debian/files”)
-  non-trivial-package-version:
-    needs: [single-package]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          sed -i '1 s/\(1\)/4.3.2-1+final~42-5.deb+long~version/' test/debian/changelog
-          sed -i 's/native/quilt/' test/debian/source/format
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          buildpackage-opts: --build=binary --no-sign
-          source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_4.3.2-1+final~42-5.deb+long~version_amd64.deb
-          dpkg --contents debian/artifacts/test_4.3.2-1+final~42-5.deb+long~version_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_4.3.2-1+final~42-5.deb+long~version_amd64.buildinfo
-          test -f debian/artifacts/test_4.3.2-1+final~42-5.deb+long~version_amd64.changes
-
-  not-moving-artifacts:
-    needs: [single-package]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          artifacts-dir: .
-          buildpackage-opts: --build=binary --no-sign
-          source-dir: test
-      - run: |
-          dpkg --info test_1_amd64.deb
-          dpkg --contents test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f test_1_amd64.buildinfo
-          test -f test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   probe-env:
     runs-on: ubuntu-latest
@@ -415,12 +324,12 @@ jobs:
           test "${{ steps.build-deb.outcome }}" = 'failure'
 
   setup-hook:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: cat test/Makefile_setup-hook >>test/Makefile
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -430,42 +339,34 @@ jobs:
             Pin: release o=Debian
             Pin-Priority: 666
             EOF
-          buildpackage-opts: --build=binary --no-sign
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
-  single-package:
+  build-librespot:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
-          source-dir: test
-      - run: |
-          test "$(ls -1 debian/artifacts/*.deb | wc -l)" = 1
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
-
-  source-package:
-    runs-on: ubuntu-latest
-    steps:
+          path: build-rust-deb-action
       - uses: actions/checkout@v4
-      - uses: ./
         with:
-          buildpackage-opts: --build=source --no-sign
-          source-dir: test
-      - run: |
-          ! ls -1 debian/artifacts/*.deb 2>/dev/null
-          test -f debian/artifacts/test_1.dsc
-          test -f debian/artifacts/test_1.tar.xz
-          test -f debian/artifacts/test_1_source.buildinfo
-          test -f debian/artifacts/test_1_source.changes
+          repository: librespot-org/librespot
+          ref: v0.6.0
+          path: librespot
+      - uses: ./build-rust-deb-action
+        id: build
+        with:
+          host-build-deps: libclang-14-dev cmake
+          target-build-deps: libpulse-dev libasound2-dev
+          target-arch: armhf
+          # bindget-cli 0.71 breaks build
+          rust-buildtools: bindgen-cli@0.70.1
+          rust-features: pulseaudio-backend
+          rust-version: 1.82.0
+          source-dir: librespot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: librespot
+          path: ${{ steps.build.outputs.artifact-dir }}

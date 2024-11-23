@@ -1,0 +1,20 @@
+[package]
+name = "rust-deb-test"
+version = "0.1.0"
+authors = ["ChPr <chriscatango@gmail.com>"]
+edition = "2021"
+description = "Rust test package"
+
+[package.metadata.deb]
+maintainer = "ChPr <chriscatango@gmail.com>"
+copyright = "2024, ChPr <chriscatango@gmail.com>"
+license-file = ["LICENSE", "4"]
+extended-description = """\
+A simple test case for cargo deb github action"""
+depends = "$auto"
+section = "utility"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+alsa = { version = "0.9.0", optional = true }

@@ -65,11 +65,6 @@ extra_repo_keys_file=$build_dir/build-deb-action.asc
 extra_repo_key_files_file=$build_dir/extra_repo_key_files
 gitconfig_file=$build_dir/gitconfig
 
-INPUT_ARTIFACTS_DIR=${INPUT_ARTIFACTS_DIR:-.}
-if ! check_path_prefix "$INPUT_ARTIFACTS_DIR" "$GITHUB_WORKSPACE"; then
-	die 2 "artifacts-dir is not in GITHUB_WORKSPACE"
-fi
-
 INPUT_SOURCE_DIR=${INPUT_SOURCE_DIR:-.}
 if ! check_path_prefix "$INPUT_SOURCE_DIR" "$GITHUB_WORKSPACE"; then
 	die 2 "source-dir is not in GITHUB_WORKSPACE"
@@ -186,6 +181,18 @@ if [ -n "$INPUT_SETUP_HOOK" ]; then
 	end_group
 fi
 
+# check architecture and set output path
+case "$INPUT_TARGET_ARCH" in
+        amd64) rustArch='x86_64-unknown-linux-gnu' ;;
+        armhf) rustArch='armv7-unknown-linux-gnueabihf' ;;
+        arm64) rustArch='aarch64-unknown-linux-gnu' ;;
+        i386) rustArch='i686-unknown-linux-gnu' ;;
+        ppc64el) rustArch='powerpc64le-unknown-linux-gnu' ;;
+        s390x) rustArch='s390x-unknown-linux-gnu' ;;
+        *) echo >&2 "unsupported architecture: ${INPUT_TARGET_ARCH}"; exit 1 ;;
+esac
+echo "output_path=$INPUT_SOURCE_DIR/target/$rustArch/debian" >> "$GITHUB_OUTPUT"
+
 start_group "Installing build dependencies"
 in_container /github/action/scripts/install_build_deps
 end_group
@@ -198,10 +205,6 @@ fi
 
 start_group "Building package"
 in_container /github/action/scripts/build_packages
-end_group
-
-start_group "Moving artifacts"
-in_container /github/action/scripts/move_artifacts
 end_group
 
 start_group "Cleaning up"

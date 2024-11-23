@@ -1,17 +1,16 @@
 #!/bin/sh
-
 set -eu
 
-# Adapted from pbuilder's and sbuild's support for cross-building:
-if [ -n "$INPUT_HOST_ARCH" ]; then
-	if [ -z "${CONFIG_SITE-}" ]; then
-		export CONFIG_SITE="/etc/dpkg-cross/cross-config.$INPUT_HOST_ARCH"
-	fi
-	export DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:+$DEB_BUILD_OPTIONS }nocheck"
-	export DEB_BUILD_PROFILES="${DEB_BUILD_PROFILES:+$DEB_BUILD_PROFILES }cross nocheck"
-	INPUT_BUILDPACKAGE_OPTS="$INPUT_BUILDPACKAGE_OPTS --host-arch=$INPUT_HOST_ARCH"
+# shellcheck disable=SC1091 
+. ./build.env
+
+PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a "$INPUT_TARGET_ARCH" -qDEB_HOST_GNU_TYPE)"
+export PKG_CONFIG_LIBDIR
+
+if [ -n "$INPUT_RUST_FEATURES" ]; then
+    INPUT_RUST_FEATURES="$(echo "$INPUT_RUST_FEATURES" | sed "s/[[:blank:]]*$//;s/ /,/g")"
+    set -- -- --features "${INPUT_RUST_FEATURES}"
 fi
 
 cd -- "$INPUT_SOURCE_DIR"
-# shellcheck disable=SC2086
-dpkg-buildpackage $INPUT_BUILDPACKAGE_OPTS
+cargo deb --separate-debug-symbols --target "${RUST_TARGET}" "$@"

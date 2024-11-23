@@ -3,6 +3,20 @@
 set -eu
 
 APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
+CARGO_DEB_VERSION="2.9.3"
+
+get_rust_arch() {
+    dpkgArch="${1}"
+    case "${dpkgArch##*-}" in
+        amd64) rustArch='x86_64-unknown-linux-gnu'; rustupSha256='6aeece6993e902708983b209d04c0d1dbb14ebb405ddb87def578d41f920f56d' ;;
+        armhf) rustArch='armv7-unknown-linux-gnueabihf'; rustupSha256='3c4114923305f1cd3b96ce3454e9e549ad4aa7c07c03aec73d1a785e98388bed' ;;
+        arm64) rustArch='aarch64-unknown-linux-gnu'; rustupSha256='1cffbf51e63e634c746f741de50649bbbcbd9dbe1de363c9ecef64e278dba2b2' ;;
+        i386) rustArch='i686-unknown-linux-gnu'; rustupSha256='0a6bed6e9f21192a51f83977716466895706059afb880500ff1d0e751ada5237' ;;
+        ppc64el) rustArch='powerpc64le-unknown-linux-gnu'; rustupSha256='079430f58ad4da1d1f4f5f2f0bd321422373213246a93b3ddb53dad627f5aa38' ;;
+        s390x) rustArch='s390x-unknown-linux-gnu'; rustupSha256='e7f89da453c8ce5771c28279d1a01d5e83541d420695c74ec81a7ec5d287c51c' ;;
+        *) echo >&2 "unsupported architecture: ${dpkgArch}"; exit 1 ;;
+    esac
+}
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -13,12 +27,18 @@ cat >"$APT_CONF_FILE" <<-EOF
 	quiet "yes";
 EOF
 
-# Adapted from pbuilder's and sbuild's support for cross-building:
-if [ -n "$INPUT_HOST_ARCH" ]; then
-	dpkg --add-architecture "$INPUT_HOST_ARCH"
-	INPUT_EXTRA_BUILD_DEPS="$INPUT_EXTRA_BUILD_DEPS crossbuild-essential-$INPUT_HOST_ARCH libc-dev:$INPUT_HOST_ARCH"
-	printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_HOST_ARCH" >>"$APT_CONF_FILE"
+# install build architecture
+dpkg --add-architecture "$INPUT_TARGET_ARCH"
+if [ -n "$INPUT_TARGET_BUILD_DEPS" ]; then
+    INPUT_TARGET_BUILD_DEPS=$(echo "$INPUT_TARGET_BUILD_DEPS" | sed "s/[[:blank:]]*$/ /;s/ /:$INPUT_TARGET_ARCH /g")
 fi
+BUILD_DEPS="$INPUT_HOST_BUILD_DEPS $INPUT_TARGET_BUILD_DEPS crossbuild-essential-$INPUT_TARGET_ARCH libc-dev:$INPUT_TARGET_ARCH"
+printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_TARGET_ARCH" >>"$APT_CONF_FILE"
+get_rust_arch "${INPUT_TARGET_ARCH}"
+RUST_TARGET="${rustArch}"
+
+# add rust target to build envs
+echo "RUST_TARGET='${RUST_TARGET}'" >> build.env
 
 # debconf has priority “required” and is indirectly depended on by some
 # essential packages. It is reasonably safe to blindly assume it is installed.
@@ -34,10 +54,39 @@ printf "%s\n" "$INPUT_EXTRA_REPOS" >"/etc/apt/sources.list.d/build-deb-action${e
 apt-get update
 
 # shellcheck disable=SC2086
-apt-get build-dep $INPUT_APT_OPTS -- "./$INPUT_SOURCE_DIR"
+apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essential $BUILD_DEPS
 
-# In theory, explicitly installing dpkg-dev would not be necessary. `apt-get
-# build-dep` will *always* install build-essential which depends on dpkg-dev.
-# But let’s be explicit here.
+# install rust
+# inspired by official rust docker image 
+# https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
+
+# create rust config
+mkdir "$INPUT_SOURCE_DIR/.cargo"
+cat <<- EOT >> "$INPUT_SOURCE_DIR/.cargo/config.toml"
+[target.${rustArch}]
+linker = "$(dpkg-architecture -a "$INPUT_TARGET_ARCH" -qDEB_HOST_GNU_TYPE)-gcc"
+EOT
+
+# get rust arch for build system architecture
+get_rust_arch "$(dpkg --print-architecture)"
+
+# download and prepare rustup-init
+url="https://static.rust-lang.org/rustup/archive/1.27.1/${rustArch}/rustup-init"
+wget "$url"
+echo "${rustupSha256} *rustup-init" | sha256sum -c -
+chmod +x rustup-init
+
+# install Rust via rustup-init
+# rustup-init throws nonblocking errors when installed in a docker containers as root. The error is caused as $HOME directory is not /root but /home/runner.
+
+if [ -n "$INPUT_RUST_VERSION" ]; then
+    set -- --default-toolchain "${INPUT_RUST_VERSION}"
+fi
+
+./rustup-init -y --no-modify-path --profile minimal "$@" --default-host "${rustArch}" --target "$RUST_TARGET"
+rm rustup-init
+
+# install required rust build tools
 # shellcheck disable=SC2086
-apt-get install $INPUT_APT_OPTS -- dpkg-dev libdpkg-perl $INPUT_EXTRA_BUILD_DEPS
+cargo install cargo-deb@$CARGO_DEB_VERSION $INPUT_RUST_BUILDTOOLS
+
