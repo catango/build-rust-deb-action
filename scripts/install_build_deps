@@ -4,6 +4,21 @@ set -eu
 
 APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
 
+get_rust_arch() {
+    local dpkgArch="${1}"
+    local rustArch
+    case "${dpkgArch##*-}" in
+        amd64) rustArch='x86_64-unknown-linux-gnu'; rustupSha256='6aeece6993e902708983b209d04c0d1dbb14ebb405ddb87def578d41f920f56d' ;;
+        armhf) rustArch='armv7-unknown-linux-gnueabihf'; rustupSha256='3c4114923305f1cd3b96ce3454e9e549ad4aa7c07c03aec73d1a785e98388bed' ;;
+        arm64) rustArch='aarch64-unknown-linux-gnu'; rustupSha256='1cffbf51e63e634c746f741de50649bbbcbd9dbe1de363c9ecef64e278dba2b2' ;;
+        i386) rustArch='i686-unknown-linux-gnu'; rustupSha256='0a6bed6e9f21192a51f83977716466895706059afb880500ff1d0e751ada5237' ;;
+        ppc64el) rustArch='powerpc64le-unknown-linux-gnu'; rustupSha256='079430f58ad4da1d1f4f5f2f0bd321422373213246a93b3ddb53dad627f5aa38' ;;
+        s390x) rustArch='s390x-unknown-linux-gnu'; rustupSha256='e7f89da453c8ce5771c28279d1a01d5e83541d420695c74ec81a7ec5d287c51c' ;;
+        *) echo >&2 "unsupported architecture: ${dpkgArch}"; exit 1 ;;
+    esac;
+    echo rustArch
+}
+
 export DEBIAN_FRONTEND=noninteractive
 
 cat >"$APT_CONF_FILE" <<-EOF
@@ -18,6 +33,7 @@ if [ -n "$INPUT_HOST_ARCH" ]; then
 	dpkg --add-architecture "$INPUT_HOST_ARCH"
 	INPUT_EXTRA_BUILD_DEPS="$INPUT_EXTRA_BUILD_DEPS crossbuild-essential-$INPUT_HOST_ARCH libc-dev:$INPUT_HOST_ARCH"
 	printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_HOST_ARCH" >>"$APT_CONF_FILE"
+    export RUST_TARGET="--target $(get_rust_arch $INPUT_HOST_ARCH)"
 fi
 
 # debconf has priority “required” and is indirectly depended on by some
@@ -33,11 +49,26 @@ printf "%s\n" "$INPUT_EXTRA_REPOS" >"/etc/apt/sources.list.d/build-deb-action${e
 
 apt-get update
 
-# shellcheck disable=SC2086
-apt-get build-dep $INPUT_APT_OPTS -- "./$INPUT_SOURCE_DIR"
+# libclang-14 is required for bindgen-cli support. Bindgen is required to generate native C bindings for some rust projects
+apt-get install $INPUT_APT_OPTS -- pkg-config build-essential libclang-14-dev $INPUT_EXTRA_BUILD_DEPS
 
-# In theory, explicitly installing dpkg-dev would not be necessary. `apt-get
-# build-dep` will *always* install build-essential which depends on dpkg-dev.
-# But let’s be explicit here.
-# shellcheck disable=SC2086
-apt-get install $INPUT_APT_OPTS -- dpkg-dev libdpkg-perl $INPUT_EXTRA_BUILD_DEPS
+# install rust
+# inspired by official rust docker image 
+# https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
+
+# get rust arch for build system architecture
+get_rust_arch $(dpkg --print-architecture) 
+rustArch=$?
+
+# download and prepare rustup-init
+url="https://static.rust-lang.org/rustup/archive/1.27.1/${rustArch}/rustup-init"
+wget "$url"
+echo "${rustupSha256} *rustup-init" | sha256sum -c -
+chmod +x rustup-init
+
+# get target arch for 
+./rustup-init -y --no-modify-path --profile minimal --default-toolchain $RUST_VERSION --default-host ${rustArch} $RUST_TARGET
+rm rustup-init
+
+# install required rust build tools
+cargo install bindgen-cli cargo-deb

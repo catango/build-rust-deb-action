@@ -43,6 +43,10 @@ inputs:
     default: ./
     description: Path relative to $GITHUB_WORKSPACE that contains the package sources
     required: true
+  rust-features:
+    description: optional features the rust package shall be built with
+    required: false
+
 runs:
   using: composite
   steps:
@@ -61,6 +65,7 @@ runs:
         INPUT_HOST_ARCH: ${{ inputs.host-arch }}
         INPUT_SETUP_HOOK: ${{ inputs.setup-hook }}
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
+        INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
       run: ${{ github.action_path }}/scripts/run
       shell: bash
 branding:
