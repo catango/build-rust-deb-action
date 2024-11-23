@@ -26,7 +26,7 @@ cat >"$APT_CONF_FILE" <<-EOF
 	quiet "yes";
 EOF
 
-RUST_TARGET=''
+export RUST_TARGET=''
 # Adapted from pbuilder's and sbuild's support for cross-building:
 if [ -n "$INPUT_HOST_ARCH" ]; then
 	dpkg --add-architecture "$INPUT_HOST_ARCH"
