@@ -46,6 +46,10 @@ inputs:
   rust-features:
     description: optional features the rust package shall be built with
     required: false
+  rust-version:
+    default: 1.82.0
+    description: Rust version for build
+    required: true
 
 runs:
   using: composite
@@ -66,6 +70,7 @@ runs:
         INPUT_SETUP_HOOK: ${{ inputs.setup-hook }}
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
+        INPUT_RUST_VERSION: ${{ inputs.rust-version }}
       run: ${{ github.action_path }}/scripts/run
       shell: bash
 branding:
