@@ -4,6 +4,8 @@ set -eu
 
 APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
 
+rustupSha256=''
+
 get_rust_arch() {
     local dpkgArch="${1}"
     local rustArch
