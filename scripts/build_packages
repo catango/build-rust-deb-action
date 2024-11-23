@@ -1,6 +1,7 @@
 #!/bin/sh
 
 set -eu
+. global.env
 
 # Adapted from pbuilder's and sbuild's support for cross-building:
 if [ -n "$INPUT_HOST_ARCH" ]; then
