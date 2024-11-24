@@ -24,6 +24,8 @@ cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
 #cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
+
+echo "artifact=${INPUT_SOURCE_DIR}/target/debian >> $GITHUB_OUTPUT" 
 set -x
 touch test
 pwd
@@ -33,6 +35,3 @@ ln -s "/github/workspace/${INPUT_SOURCE_DIR}/target/debian /github/workspace/art
 ls -l /github/workspace/test/target/debian
 echo "?????????????????????????"
 ls -l 
-echo "####################"
-ls -l "/github/workspace/artifacts"
-exit 1
