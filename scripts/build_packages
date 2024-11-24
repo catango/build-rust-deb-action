@@ -23,3 +23,5 @@ fi
 cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
 cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
+
+ln -s "${INPUT_SOURCE_DIR}/target/debian ${INPUT_ARTIFACTS_DIR}"
