@@ -200,12 +200,6 @@ start_group "Building package"
 in_container /github/action/scripts/build_packages
 end_group
 
-#start_group "Moving artifacts"
-#in_container /github/action/scripts/move_artifacts
-#end_group
-echo "my_var=${INPUT_SOURCE_DIR}/target/debian" >> "${GITHUB_OUTPUT}" 
-
-
 start_group "Cleaning up"
 clean_up
 trap - EXIT

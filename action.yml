@@ -53,14 +53,12 @@ inputs:
 outputs:
   artifact_dir:
     description: Build artifacts, including deb file and symbols
-    value: ${{ steps.main.outputs.my_var }}
+    value: ${{ inputs.source-dir }}/target/debian
 
 runs:
   using: composite
   steps:
-    - name: main
-      id: main
-      env:
+    - env:
         # Manually setting INPUT_* variables here until
         # https://github.com/actions/runner/issues/665 is resolved:
         INPUT_APT_OPTS: ${{ inputs.apt-opts }}
@@ -77,9 +75,7 @@ runs:
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
         INPUT_RUST_VERSION: ${{ inputs.rust-version }}
-      run: | 
-        ${{ github.action_path }}/scripts/run
-        echo "my_var=${INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT
+      run: ${{ github.action_path }}/scripts/run
       shell: bash
 branding:
   color: red
