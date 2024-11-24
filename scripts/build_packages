@@ -1,7 +1,6 @@
 #!/bin/sh
 
 set -eu
-set -x
 cat global.env
 . ./global.env
 
@@ -23,14 +22,8 @@ fi
 
 cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
-#cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
+cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
-
-#echo "my_var=${INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT 
-
-#set -x
-
-mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"
-touch "/github/workspace/${INPUT_SOURCE_DIR}/target/debian/test"
-
-#ls -l 
+# test without compiling
+#mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"
+#touch "/github/workspace/${INPUT_SOURCE_DIR}/target/debian/test"
