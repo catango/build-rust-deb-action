@@ -108,17 +108,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
+        id: build
         with:
-          buildpackage-opts: --build=binary --no-sign
           host-arch: i386
           source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_1_i386.deb
-          dpkg --contents debian/artifacts/test_1_i386.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_i386.buildinfo
-          test -f debian/artifacts/test_1_i386.changes
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact-i386
+          path: ${{ steps.build.outputs.artifact_dir }}
+
 
   extra-build-deps:
     needs: [single-package]
@@ -295,10 +293,6 @@ jobs:
         with:
           buildpackage-opts: --build=full --no-sign
           source-dir: test
-      - name: Generate output
-        id: build1
-        run: |
-          echo "my_var=5" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact

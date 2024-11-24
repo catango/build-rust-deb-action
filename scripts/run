@@ -65,11 +65,6 @@ extra_repo_keys_file=$build_dir/build-deb-action.asc
 extra_repo_key_files_file=$build_dir/extra_repo_key_files
 gitconfig_file=$build_dir/gitconfig
 
-INPUT_ARTIFACTS_DIR=${INPUT_ARTIFACTS_DIR:-.}
-if ! check_path_prefix "$INPUT_ARTIFACTS_DIR" "$GITHUB_WORKSPACE"; then
-	die 2 "artifacts-dir is not in GITHUB_WORKSPACE"
-fi
-
 INPUT_SOURCE_DIR=${INPUT_SOURCE_DIR:-.}
 if ! check_path_prefix "$INPUT_SOURCE_DIR" "$GITHUB_WORKSPACE"; then
 	die 2 "source-dir is not in GITHUB_WORKSPACE"
