@@ -26,7 +26,10 @@ cd -- "$INPUT_SOURCE_DIR"
 
 touch test
 pwd
+
+mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"
 ln -s "/github/workspace/${INPUT_SOURCE_DIR}/target/debian /github/workspace/artifacts"
+ls -l /github/workspace/test/target/debian
 echo "?????????????????????????"
 ls -l 
 echo "####################"
