@@ -25,11 +25,11 @@ cd -- "$INPUT_SOURCE_DIR"
 #cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
 
-echo "my_var=${INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT 
+#echo "my_var=${INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT 
 
-set -x
+#set -x
 
-mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"
-touch "/github/workspace/${INPUT_SOURCE_DIR}/target/debian/test"
+#mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"
+#touch "/github/workspace/${INPUT_SOURCE_DIR}/target/debian/test"
 
-ls -l 
+#ls -l 
