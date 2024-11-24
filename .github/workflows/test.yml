@@ -103,7 +103,6 @@ jobs:
           test -f debian/artifacts/test_1_amd64.changes
 
   different-host-arch:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
