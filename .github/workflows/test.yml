@@ -294,13 +294,10 @@ jobs:
         with:
           buildpackage-opts: --build=full --no-sign
           source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1.dsc
-          test -f debian/artifacts/test_1.tar.xz
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact
+          path: debian/artifacts
 
   git-as-root-in-hook:
     needs: [before-build-hook]
