@@ -50,10 +50,11 @@ inputs:
     default: 1.82.0
     description: Rust version for build
     required: true
-  outputs:
-    artifacts:
-      description: Build artifacts, including deb file and symbols
-      value: ${{ steps.main.outputs.my_var }}
+outputs:
+  artifacts:
+    description: Build artifacts, including deb file and symbols
+    value: ${{ steps.main.outputs.my_var }}
+
 runs:
   using: composite
   steps:
