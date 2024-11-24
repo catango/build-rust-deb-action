@@ -25,6 +25,7 @@ cd -- "$INPUT_SOURCE_DIR"
 #cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
 touch test
+pwd
 ln -s "/github/workspace/${INPUT_SOURCE_DIR}/target/debian /github/workspace/artifacts"
 echo "?????????????????????????"
 ls -l 
