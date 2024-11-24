@@ -57,7 +57,9 @@ inputs:
 runs:
   using: composite
   steps:
-    - env:
+    - name: main
+      id: main
+      env:
         # Manually setting INPUT_* variables here until
         # https://github.com/actions/runner/issues/665 is resolved:
         INPUT_APT_OPTS: ${{ inputs.apt-opts }}
@@ -74,8 +76,6 @@ runs:
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
         INPUT_RUST_VERSION: ${{ inputs.rust-version }}
-    - name: main
-      id: main
       run: | 
         ${{ github.action_path }}/scripts/run
         echo "my_var={INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT
