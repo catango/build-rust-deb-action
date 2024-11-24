@@ -26,12 +26,10 @@ cd -- "$INPUT_SOURCE_DIR"
 
 
 echo "artifact=${INPUT_SOURCE_DIR}/target/debian >> $GITHUB_OUTPUT" 
+
 set -x
-touch test
-pwd
 
 mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"
-ln -s "/github/workspace/${INPUT_SOURCE_DIR}/target/debian /github/workspace/artifacts"
-ls -l /github/workspace/test/target/debian
-echo "?????????????????????????"
+touch "/github/workspace/${INPUT_SOURCE_DIR}/target/debian/test"
+
 ls -l 

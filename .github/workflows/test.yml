@@ -289,6 +289,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -297,7 +298,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact
-          path: test
+          path: ${{ steps.build.outputs.artifact }}
 
   git-as-root-in-hook:
     needs: [before-build-hook]
