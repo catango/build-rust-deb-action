@@ -295,6 +295,8 @@ jobs:
         with:
           buildpackage-opts: --build=full --no-sign
           source-dir: test
+        run: |
+          echo "my_var=test" >> "$GITHUB_OUTPUT"     
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact
