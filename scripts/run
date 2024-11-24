@@ -203,7 +203,7 @@ end_group
 #start_group "Moving artifacts"
 #in_container /github/action/scripts/move_artifacts
 #end_group
-echo "artifact=${INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT 
+echo "my_var=${NPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT 
 
 
 start_group "Cleaning up"

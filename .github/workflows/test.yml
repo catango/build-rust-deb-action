@@ -298,7 +298,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact
-          path: ${{ steps.build.outputs.artifact }}
+          path: ${{ steps.build.outputs.my_var }}
 
   git-as-root-in-hook:
     needs: [before-build-hook]

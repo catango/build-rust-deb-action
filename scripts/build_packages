@@ -25,7 +25,7 @@ cd -- "$INPUT_SOURCE_DIR"
 #cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
 
-echo "artifact=${INPUT_SOURCE_DIR}/target/debian >> $GITHUB_OUTPUT" 
+echo "my_var=${INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT 
 
 set -x
 
