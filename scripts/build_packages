@@ -24,6 +24,7 @@ cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
 #cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
+set -x
 touch test
 pwd
 
