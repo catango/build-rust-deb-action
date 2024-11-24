@@ -26,5 +26,8 @@ cd -- "$INPUT_SOURCE_DIR"
 
 touch test
 ln -s "/github/workspace/${INPUT_SOURCE_DIR}/target/debian /github/workspace/artifacts"
+echo "?????????????????????????"
+ls -l 
+echo "####################"
 ls -l "/github/workspace/artifacts"
 exit 1
