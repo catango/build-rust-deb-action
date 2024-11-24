@@ -73,7 +73,7 @@ runs:
         INPUT_RUST_VERSION: ${{ inputs.rust-version }}
       run: | 
         ${{ github.action_path }}/scripts/run
-        echo "my_var=${INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT
+        echo "::set-output name=my_var::${INPUT_SOURCE_DIR}/target/debian"
       shell: bash
 branding:
   color: red
