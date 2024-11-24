@@ -51,9 +51,9 @@ inputs:
     description: Rust version for build
     required: true
 outputs:
-  artifacts:
+  artifact_dir:
     description: Build artifacts, including deb file and symbols
-    value: asdf
+    value: {{ steps.main.outputs.my_var }}
 
 runs:
   using: composite
