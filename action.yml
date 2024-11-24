@@ -50,7 +50,10 @@ inputs:
     default: 1.82.0
     description: Rust version for build
     required: true
-
+  outputs:
+    artifacts:
+      description: Build artifacts, including deb file and symbols
+      value: ${{steps.main.outputs.my_var }}
 runs:
   using: composite
   steps:
@@ -71,9 +74,10 @@ runs:
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
         INPUT_RUST_VERSION: ${{ inputs.rust-version }}
+    - name: main  
       run: | 
         ${{ github.action_path }}/scripts/run
-        echo "::set-output name=my_var::${INPUT_SOURCE_DIR}/target/debian"
+        echo "my_var={INPUT_SOURCE_DIR}/target/debian" >> $GITHUB_OUTPUT
       shell: bash
 branding:
   color: red
