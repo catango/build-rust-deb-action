@@ -25,3 +25,8 @@ cd -- "$INPUT_SOURCE_DIR"
 cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
 ln -s "${INPUT_SOURCE_DIR}/target/debian ${INPUT_ARTIFACTS_DIR}"
+ls -l
+echo "#####"
+ls -l ${INPUT_ARTIFACTS_DIR}
+echo "#####"
+exit 1
