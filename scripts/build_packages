@@ -24,4 +24,4 @@ cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
 cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
-ln -s "${INPUT_SOURCE_DIR}/target/debian artifacts"
+ln -s "/github/workspace/${INPUT_SOURCE_DIR}/target/debian /github/workspace/artifacts"
