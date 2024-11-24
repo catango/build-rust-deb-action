@@ -295,10 +295,14 @@ jobs:
         with:
           buildpackage-opts: --build=full --no-sign
           source-dir: test
+      - name: Generate output
+        id: build1
+        run: |
+          echo "my_var=5" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact
-          path: ${{ steps.build.outputs.my_var }}
+          path: ${{ steps.build1.outputs.my_var }}
 
   git-as-root-in-hook:
     needs: [before-build-hook]
