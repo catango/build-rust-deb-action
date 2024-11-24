@@ -5,10 +5,6 @@ inputs:
   apt-opts:
     description: Options to be passed to apt-get
     required: false
-  artifacts-dir:
-    default: debian/artifacts
-    description: Directory path relative to $GITHUB_WORKSPACE to place the built packages in
-    required: true
   before-build-hook:
     description: Shell command(s) to execute after installing build dependencies
       and before executing dpkg-buildpackage
@@ -62,7 +58,6 @@ runs:
         # Manually setting INPUT_* variables here until
         # https://github.com/actions/runner/issues/665 is resolved:
         INPUT_APT_OPTS: ${{ inputs.apt-opts }}
-        INPUT_ARTIFACTS_DIR: ${{ inputs.artifacts-dir }}
         INPUT_BEFORE_BUILD_HOOK: ${{ inputs.before-build-hook }}
         INPUT_BUILDPACKAGE_OPTS: ${{ inputs.buildpackage-opts }}
         INPUT_DOCKER_IMAGE: ${{ inputs.docker-image }}
