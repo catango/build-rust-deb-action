@@ -35,10 +35,6 @@ if [ -n "$INPUT_HOST_ARCH" ]; then
 	printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_HOST_ARCH" >>"$APT_CONF_FILE"
     get_rust_arch $INPUT_HOST_ARCH
     RUST_TARGET="--target ${rustArch}"
-    cat <<- EOT >> ~/.cargo/config.toml 
-    [target.${rustArch}]
-    linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
-EOT
 fi
 
 # add rust target to build envs
@@ -63,6 +59,14 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 # install rust
 # inspired by official rust docker image 
 # https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
+
+# create config
+if [ -n "$INPUT_HOST_ARCH" ]; then
+    cat <<- EOT >> ~/.cargo/config.toml 
+[target.${rustArch}]
+linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
+EOT
+fi
 
 # get rust arch for build system architecture
 get_rust_arch $(dpkg --print-architecture)
