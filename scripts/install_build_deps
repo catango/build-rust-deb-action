@@ -28,6 +28,15 @@ export DEBIAN_FRONTEND=noninteractive
 #	quiet "yes";
 #EOF
 
+
+cat >"$APT_CONF_FILE" <<-EOF
+	APT::Get::Assume-Yes "yes";
+	Acquire::Languages "none";
+	quiet "yes";
+EOF
+
+
+
 RUST_TARGET=''
 # Adapted from pbuilder's and sbuild's support for cross-building:
 if [ -n "$INPUT_HOST_ARCH" ]; then
