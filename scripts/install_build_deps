@@ -66,7 +66,7 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 
 if [ -n "$INPUT_HOST_ARCH" ]; then
     mkdir "$INPUT_SOURCE_DIR/.cargo"
-    cat <<- EOT >> ."$INPUT_SOURCE_DIR/.cargo/config.toml"
+    cat <<- EOT >> "$INPUT_SOURCE_DIR/.cargo/config.toml"
 [target.${rustArch}]
 linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
 EOT
