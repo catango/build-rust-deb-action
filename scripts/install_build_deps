@@ -86,5 +86,5 @@ chmod +x rustup-init
 rm rustup-init
 
 # install required rust build tools
-cargo install bindgen-cli cargo-deb
+#cargo install bindgen-cli cargo-deb
 
