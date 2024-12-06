@@ -65,10 +65,12 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 ## todo: cteate file in $CARGO_HOME after rust installation
 
 if [ -n "$INPUT_HOST_ARCH" ]; then
-    read -r -d '' CARGO_TOML <<- EOT
+    CARGO_TOML=$(
+    cat <<- EOT
 [target.${rustArch}]
 linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
 EOT
+)
 fi
 
 # get rust arch for build system architecture
