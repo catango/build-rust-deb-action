@@ -65,8 +65,7 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 ## todo: cteate file in $CARGO_HOME after rust installation
 
 if [ -n "$INPUT_HOST_ARCH" ]; then
-    mkdir -p "~/.cargo"
-    cat <<- EOT >> ~/.cargo/config.toml 
+    read -r -d '' CARGO_TOML <<- EOT
 [target.${rustArch}]
 linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
 EOT
@@ -84,6 +83,7 @@ chmod +x rustup-init
 # get target arch for 
 ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $INPUT_RUST_VERSION --default-host ${rustArch} $RUST_TARGET
 rm rustup-init
+echo "$CARGO_TOML" > "$CARGO_HOME/.cargo/cargo.toml
 
 # install required rust build tools
 cargo install bindgen-cli cargo-deb
