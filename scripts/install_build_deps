@@ -61,7 +61,11 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 # https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
 
 # create config
+# build error
+## todo: cteate file in $CARGO_HOME after rust installation
+
 if [ -n "$INPUT_HOST_ARCH" ]; then
+    mkdir -p "~/.cargo"
     cat <<- EOT >> ~/.cargo/config.toml 
 [target.${rustArch}]
 linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
