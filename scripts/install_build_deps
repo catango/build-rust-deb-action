@@ -20,12 +20,13 @@ get_rust_arch() {
 
 export DEBIAN_FRONTEND=noninteractive
 
-cat >"$APT_CONF_FILE" <<-EOF
-	APT::Get::Assume-Yes "yes";
-	APT::Install-Recommends "no";
-	Acquire::Languages "none";
-	quiet "yes";
-EOF
+
+#cat >"$APT_CONF_FILE" <<-EOF
+#	APT::Get::Assume-Yes "yes";
+#	APT::Install-Recommends "no";
+#	Acquire::Languages "none";
+#	quiet "yes";
+#EOF
 
 RUST_TARGET=''
 # Adapted from pbuilder's and sbuild's support for cross-building:
