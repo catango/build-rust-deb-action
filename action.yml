@@ -46,7 +46,7 @@ inputs:
 outputs:
   artifact_dir:
     description: Build artifacts, including deb file and symbols
-    value: ${{ inputs.source-dir }}/target/debian
+    value: ${{ inputs.source-dir }}/target
 
 runs:
   using: composite
