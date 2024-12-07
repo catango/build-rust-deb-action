@@ -191,6 +191,11 @@ if [ -n "$INPUT_BEFORE_BUILD_HOOK" ]; then
 	end_group
 fi
 
+# define output
+echo "path=$INPUT_SOURCE_DIR/target" >> $GITHUB_OUTPUT
+
+
+
 start_group "Building package"
 in_container /github/action/scripts/build_packages
 end_group

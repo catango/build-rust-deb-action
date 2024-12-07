@@ -46,8 +46,8 @@ inputs:
 outputs:
   artifact_dir:
     description: Build artifacts, including deb file and symbols
-    value: ${{ inputs.source-dir }}/target
-
+    value: ${{ steps.runner.outputs.path }}
+      
 runs:
   using: composite
   steps:
@@ -66,6 +66,7 @@ runs:
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
         INPUT_RUST_VERSION: ${{ inputs.rust-version }}
+      id: runner
       run: ${{ github.action_path }}/scripts/run
       shell: bash
 branding:

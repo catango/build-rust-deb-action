@@ -25,10 +25,6 @@ cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
 cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 
-find /usr/lib/ -iname libc.so.6
-
-echo "##################"
-
 #cargo build --release ${RUST_TARGET} ${INPUT_RUST_FEATURES}
 # test without compiling
 #mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"

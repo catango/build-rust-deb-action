@@ -111,7 +111,6 @@ jobs:
         with:
           host-arch: armhf
           source-dir: test
-          docker-image: debian:stable
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact-i386
