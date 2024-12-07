@@ -109,12 +109,12 @@ jobs:
       - uses: ./
         id: build
         with:
-          host-arch: amd64
+          target-arch: armhf
           source-dir: test
           extra-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
-          name: test-artifact-i386
+          name: test-artifact-${{ target-arch }}
           path: ${{ steps.build.outputs.artifact_dir }}
 
 

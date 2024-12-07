@@ -190,7 +190,6 @@ case "$INPUT_HOST_ARCH" in
         ppc64el) rustArch='powerpc64le-unknown-linux-gnu' ;;
         s390x) rustArch='s390x-unknown-linux-gnu' ;;
         *) echo >&2 "unsupported architecture: ${INPUT_HOST_ARCH}"; exit 1 ;;
- 
 esac
 echo "output_path=$INPUT_SOURCE_DIR/target/$rustArch/debian" >> $GITHUB_OUTPUT
 
