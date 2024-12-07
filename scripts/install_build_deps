@@ -38,8 +38,8 @@ RUST_TARGET=''
 # Adapted from pbuilder's and sbuild's support for cross-building:
 if [ -n "$INPUT_HOST_ARCH" ]; then
 	dpkg --add-architecture "$INPUT_HOST_ARCH"
-    if [ -n "$INPUT_EXTRA_DEPS" ]; then
-        INPUT_EXTRA_DEPS=$(echo "$INPUT_EXTRA_BUILD_DEPS" | sed "s/[[:blank:]]*$/ /;s/ /:$INPUT_HOST_ARCH /g")
+    if [ -n "$INPUT_EXTRA_BUILD_DEPS" ]; then
+        INPUT_EXTRA_BUILD_DEPS=$(echo "$INPUT_EXTRA_BUILD_DEPS" | sed "s/[[:blank:]]*$/ /;s/ /:$INPUT_HOST_ARCH /g")
     fi
 	INPUT_EXTRA_BUILD_DEPS="$INPUT_EXTRA_BUILD_DEPS crossbuild-essential-$INPUT_HOST_ARCH libc-dev:$INPUT_HOST_ARCH"
 	printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_HOST_ARCH" >>"$APT_CONF_FILE"
