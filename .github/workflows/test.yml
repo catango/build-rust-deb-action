@@ -111,6 +111,7 @@ jobs:
         with:
           host-arch: amd64
           source-dir: test
+          extra-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact-i386

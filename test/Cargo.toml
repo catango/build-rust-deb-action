@@ -3,6 +3,7 @@ name = "rust-deb-test"
 version = "0.1.0"
 authors = ["ChPr <chriscatango@gmail.com>"]
 edition = "2021"
+description = "Rust test package"
 
 [package.metadata.deb]
 maintainer = "ChPr <chriscatango@gmail.com>"
