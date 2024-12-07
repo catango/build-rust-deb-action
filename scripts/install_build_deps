@@ -15,7 +15,7 @@ get_rust_arch() {
         ppc64el) rustArch='powerpc64le-unknown-linux-gnu'; rustupSha256='079430f58ad4da1d1f4f5f2f0bd321422373213246a93b3ddb53dad627f5aa38' ;;
         s390x) rustArch='s390x-unknown-linux-gnu'; rustupSha256='e7f89da453c8ce5771c28279d1a01d5e83541d420695c74ec81a7ec5d287c51c' ;;
         *) echo >&2 "unsupported architecture: ${dpkgArch}"; exit 1 ;;
-    esac;
+    esac
 }
 
 export DEBIAN_FRONTEND=noninteractive
@@ -31,11 +31,6 @@ EOF
 
 RUST_TARGET=''
 
-#testout=$(echo "$INPUT_EXTRA_BUILD_DEPS" | sed "s/[[:blank:]]*$/ /;s/ /:$INPUT_HOST_ARCH /g")
-
-#echo "##### $testout ####"
-
-# Adapted from pbuilder's and sbuild's support for cross-building:
 if [ -n "$INPUT_HOST_ARCH" ]; then
 	dpkg --add-architecture "$INPUT_HOST_ARCH"
     if [ -n "$INPUT_EXTRA_BUILD_DEPS" ]; then

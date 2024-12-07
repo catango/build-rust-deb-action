@@ -181,6 +181,19 @@ if [ -n "$INPUT_SETUP_HOOK" ]; then
 	end_group
 fi
 
+# check architecture and set output path
+case "$INPUT_HOST_ARCH" in
+        amd64) rustArch='x86_64-unknown-linux-gnu' ;;
+        armhf) rustArch='armv7-unknown-linux-gnueabihf' ;;
+        arm64) rustArch='aarch64-unknown-linux-gnu' ;;
+        i386) rustArch='i686-unknown-linux-gnu' ;;
+        ppc64el) rustArch='powerpc64le-unknown-linux-gnu' ;;
+        s390x) rustArch='s390x-unknown-linux-gnu' ;;
+        *) echo >&2 "unsupported architecture: ${INPUT_HOST_ARCH}"; exit 1 ;;
+ 
+esac
+echo "output_path=$INPUT_SOURCE_DIR/target/$rustArch/debian" >> $GITHUB_OUTPUT
+
 start_group "Installing build dependencies"
 in_container /github/action/scripts/install_build_deps
 end_group
@@ -190,11 +203,6 @@ if [ -n "$INPUT_BEFORE_BUILD_HOOK" ]; then
 	in_container /bin/sh -c "$INPUT_BEFORE_BUILD_HOOK"
 	end_group
 fi
-
-# define output
-echo "path=$INPUT_SOURCE_DIR/target" >> $GITHUB_OUTPUT
-
-
 
 start_group "Building package"
 in_container /github/action/scripts/build_packages
