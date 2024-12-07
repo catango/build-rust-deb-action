@@ -25,9 +25,10 @@ inputs:
   extra-repos:
     description: Extra APT repositories to configure in the build environment (one-line-style or deb822-style format)
     required: false
-  host-arch:
-    description: Foreign architecture to setup cross-building for
-    required: false
+  target-arch:
+    default: amd64
+    description: Target architecture for build (default is amd64)
+    required: true
   setup-hook:
     description: Shell command(s) to execute after setting-up the build
       environment and before installing build dependencies
@@ -61,7 +62,7 @@ runs:
         INPUT_EXTRA_DOCKER_ARGS: ${{ inputs.extra-docker-args }}
         INPUT_EXTRA_REPO_KEYS: ${{  inputs.extra-repo-keys }}
         INPUT_EXTRA_REPOS: ${{  inputs.extra-repos }}
-        INPUT_HOST_ARCH: ${{ inputs.host-arch }}
+        INPUT_HOST_ARCH: ${{ inputs.target-arch }}
         INPUT_SETUP_HOOK: ${{ inputs.setup-hook }}
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
