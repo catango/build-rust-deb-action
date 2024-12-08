@@ -412,3 +412,26 @@ jobs:
           dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
           test -f debian/artifacts/test_1_amd64.buildinfo
           test -f debian/artifacts/test_1_amd64.changes
+
+  build-librespot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: build-rust-deb-action
+      - uses: actions/checkout@v4
+        with:
+          repository: https://github.com/librespot-org/librespot
+          path: librespot
+      - uses: ./build-rust-deb-action
+        id: build
+        with:
+          host-build-deps: libclang-14-dev
+          rust-buildtools: bindgen-cli 
+          source-dir: librespot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: librespot
+          path: ${{ steps.build.outputs.artifact_dir }}
+ 
+
