@@ -97,7 +97,7 @@ jobs:
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
  
-  host-build-deps:
+  additional-host-build-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -110,7 +110,7 @@ jobs:
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
-  test-target-build-deps:
+  additional-target-build-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -127,7 +127,7 @@ jobs:
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
-  test-target-arch:
+  different-target-arch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -139,6 +139,34 @@ jobs:
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+
+  different-rust-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          rust-version: 1.79.0
+          source-dir: test
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+
+  additional-rust-buildtools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          host-build-deps: libclang-14-dev
+          rust-buildtools: bindgen-cli 
+          source-dir: test
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+
 
  
   extra-build-deps:
