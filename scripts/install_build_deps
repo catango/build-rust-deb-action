@@ -4,6 +4,7 @@ set -eu
 set -x
 
 APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
+CARGO_DEB_VERSION="2.9.3"
 
 get_rust_arch() {
     local dpkgArch="${1}"
@@ -84,6 +85,7 @@ rm rustup-init
 
 # install required rust build tools
 #cargo install bindgen-cli cargo-deb
-cargo install cargo-deb $INPUT_RUST_BUILDTOOLS
+cargo install cargo-deb@$CARGO_DEB_VERSION $INPUT_RUST_BUILDTOOLS
+
 
 
