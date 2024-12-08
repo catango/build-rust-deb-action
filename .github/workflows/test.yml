@@ -427,7 +427,7 @@ jobs:
       - uses: ./build-rust-deb-action
         id: build
         with:
-          host-build-deps: libclang-14-dev
+          host-build-deps: libclang-14-dev cmake
           target-build-deps: libpulse-dev libasound2-dev
           target-arch: armhf
           rust-buildtools: bindgen-cli
