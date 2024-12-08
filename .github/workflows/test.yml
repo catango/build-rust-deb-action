@@ -10,7 +10,6 @@ on:
 
 jobs:
   apt-opts:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +27,6 @@ jobs:
           test -f debian/artifacts/test_1_amd64.changes
 
   before-build-hook:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +59,6 @@ jobs:
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   different-artifacts-dir:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -200,7 +197,6 @@ jobs:
 
 
   extra-repo-keys-ascii:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -233,7 +229,6 @@ jobs:
           test -f debian/artifacts/test_1_amd64.changes
 
   extra-repo-keys-files:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -366,7 +361,6 @@ jobs:
           test -f debian/artifacts/test_1+${{ github.sha }}_amd64.changes
 
   local-dockerfile:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -397,7 +391,6 @@ jobs:
           test "${{ steps.build-deb.outcome }}" = 'failure'
 
   setup-hook:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
