@@ -18,7 +18,6 @@ cat global.env
 #fi
 
 if [ -n "$INPUT_RUST_FEATURES" ]; then
-
     INPUT_RUST_FEATURES="--features $(echo ${INPUT_RUST_FEATURES} | sed "s/[[:blank:]]*$//;s/ /,/g")"
 fi
 
