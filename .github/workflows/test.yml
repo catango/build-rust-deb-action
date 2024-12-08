@@ -102,7 +102,7 @@ jobs:
           test -f debian/artifacts/test_1_amd64.buildinfo
           test -f debian/artifacts/test_1_amd64.changes
 
-  different-target-arch:
+  test-target-arch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -111,11 +111,25 @@ jobs:
         with:
           target-arch: armhf
           source-dir: test
-          target-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact-armhf
           path: ${{ steps.build.outputs.artifact_dir }}
+
+  test-target-build-deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          source-dir: test
+          target-build-deps: libasound2-dev
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact
+          path: ${{ steps.build.outputs.artifact_dir }}
+
 
   extra-build-deps:
     needs: [single-package]
