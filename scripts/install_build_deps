@@ -28,17 +28,15 @@ cat >"$APT_CONF_FILE" <<-EOF
 	quiet "yes";
 EOF
 
-
-#RUST_TARGET=''
-
-	dpkg --add-architecture "$INPUT_HOST_ARCH"
-    if [ -n "$INPUT_EXTRA_BUILD_DEPS" ]; then
-        INPUT_EXTRA_BUILD_DEPS=$(echo "$INPUT_EXTRA_BUILD_DEPS" | sed "s/[[:blank:]]*$/ /;s/ /:$INPUT_HOST_ARCH /g")
-    fi
-	INPUT_EXTRA_BUILD_DEPS="$INPUT_EXTRA_BUILD_DEPS crossbuild-essential-$INPUT_HOST_ARCH libc-dev:$INPUT_HOST_ARCH"
-	printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_HOST_ARCH" >>"$APT_CONF_FILE"
-    get_rust_arch $INPUT_HOST_ARCH
-    RUST_TARGET="--target ${rustArch}"
+# install build architecture
+dpkg --add-architecture "$INPUT_TARGET_ARCH"
+if [ -n "$INPUT_EXTRA_BUILD_DEPS" ]; then
+    INPUT_EXTRA_BUILD_DEPS=$(echo "$INPUT_EXTRA_BUILD_DEPS" | sed "s/[[:blank:]]*$/ /;s/ /:$INPUT_TARGET_ARCH /g")
+fi
+INPUT_EXTRA_BUILD_DEPS="$INPUT_EXTRA_BUILD_DEPS crossbuild-essential-$INPUT_TARGET_ARCH libc-dev:$INPUT_TARGET_ARCH"
+printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_TARGET_ARCH" >>"$APT_CONF_FILE"
+get_rust_arch $INPUT_TARGET_ARCH
+RUST_TARGET="--target ${rustArch}"
 
 # add rust target to build envs
 echo "RUST_TARGET='${RUST_TARGET}'" >> global.env
@@ -67,7 +65,7 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 mkdir "$INPUT_SOURCE_DIR/.cargo"
 cat <<- EOT >> "$INPUT_SOURCE_DIR/.cargo/config.toml"
 [target.${rustArch}]
-linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
+linker = "$(dpkg-architecture -a $INPUT_TARGET_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
 EOT
 
 # get rust arch for build system architecture

@@ -74,7 +74,7 @@ runs:
         INPUT_EXTRA_REPOS: ${{  inputs.extra-repos }}
         INPUT_HOST_BUILD_DEPS: ${{ inputs.host-build-deps }}
         INPUT_TARGET_BUILD_DEPS: ${{ inputs.target-build-deps }}
-        INPUT_HOST_ARCH: ${{ inputs.target-arch }}
+        INPUT_TARGET_ARCH: ${{ inputs.target-arch }}
         INPUT_SETUP_HOOK: ${{ inputs.setup-hook }}
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}

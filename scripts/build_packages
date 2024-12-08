@@ -6,8 +6,8 @@ cat global.env
 . ./global.env
 
 # Adapted from pbuilder's and sbuild's support for cross-building:
-if [ -n "$INPUT_HOST_ARCH" ]; then
-    export PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)"
+#if [ -n "$INPUT_TARGET_ARCH" ]; then
+    export PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a $INPUT_TARGET_ARCH -qDEB_HOST_GNU_TYPE)"
 
 	#if [ -z "${CONFIG_SITE-}" ]; then
 	#	 CONFIG_SITE="/etc/dpkg-cross/cross-config.$INPUT_HOST_ARCH"
@@ -15,7 +15,7 @@ if [ -n "$INPUT_HOST_ARCH" ]; then
 	#export DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:+$DEB_BUILD_OPTIONS }nocheck"
 	#export DEB_BUILD_PROFILES="${DEB_BUILD_PROFILES:+$DEB_BUILD_PROFILES }cross nocheck"
 	#INPUT_BUILDPACKAGE_OPTS="$INPUT_BUILDPACKAGE_OPTS --host-arch=$INPUT_HOST_ARCH"
-fi
+#fi
 
 if [ -n "$INPUT_RUST_FEATURES" ]; then
     INPUT_RUST_FEATURES="--features ${INPUT_RUST_FEATURES}"
