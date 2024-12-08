@@ -151,7 +151,7 @@ jobs:
         id: build
         with:
           source-dir: test
-          rust-features: alsa-backend
+          rust-features: alsa
           target-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
