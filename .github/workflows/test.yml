@@ -111,7 +111,7 @@ jobs:
         with:
           target-arch: armhf
           source-dir: test
-          extra-build-deps: libasound2-dev
+          target-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact-i386
