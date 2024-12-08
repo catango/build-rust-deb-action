@@ -96,8 +96,8 @@ jobs:
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
-
- host-build-deps:
+ 
+  host-build-deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
