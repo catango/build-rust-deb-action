@@ -421,14 +421,15 @@ jobs:
           path: build-rust-deb-action
       - uses: actions/checkout@v4
         with:
-          repository: librespot-org/librespot
-          ref: v0.6.0
+          repository: librespot-org/librespot@v0.6.0
           path: librespot
       - uses: ./build-rust-deb-action
         id: build
         with:
           host-build-deps: libclang-14-dev
-          rust-buildtools: bindgen-cli 
+          target-build-deps: libpulse-dev 
+          rust-buildtools: bindgen-cli
+          rust-features: pulseaudio-backend
           source-dir: librespot
       - uses: actions/upload-artifact@v4
         with:
