@@ -25,6 +25,12 @@ inputs:
   extra-repos:
     description: Extra APT repositories to configure in the build environment (one-line-style or deb822-style format)
     required: false
+  host-build-deps:
+    description: Extra packages to be installed on host for build system
+    required: false
+  target-build-deps:
+    description: Extra packages to be installed as build dependencies for build target
+    required: false
   target-arch:
     default: amd64
     description: Target architecture for build (default is amd64)
@@ -44,6 +50,10 @@ inputs:
     default: 1.82.0
     description: Rust version for build
     required: true
+  rust-buildtools:
+    description: optional additional rust build tools to be installed from the crates.io. Cargo deb is installed by default. 
+    required: false
+
 outputs:
   artifact_dir:
     description: Build artifacts, including deb file and symbols
