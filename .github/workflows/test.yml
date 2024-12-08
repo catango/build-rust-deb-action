@@ -428,7 +428,7 @@ jobs:
         id: build
         with:
           host-build-deps: libclang-14-dev
-          target-build-deps: libpulse-dev 
+          target-build-deps: libpulse-dev libasound2-dev
           rust-buildtools: bindgen-cli
           rust-features: pulseaudio-backend
           source-dir: librespot
