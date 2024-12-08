@@ -72,11 +72,14 @@ runs:
         INPUT_EXTRA_DOCKER_ARGS: ${{ inputs.extra-docker-args }}
         INPUT_EXTRA_REPO_KEYS: ${{  inputs.extra-repo-keys }}
         INPUT_EXTRA_REPOS: ${{  inputs.extra-repos }}
+        INPUT_HOST_BUILD_DEPS: ${{ inputs.host-build-deps }}
+        INPUT_TARGET_BUILD_DEPS: ${{ inputs.target-build-deps }}
         INPUT_HOST_ARCH: ${{ inputs.target-arch }}
         INPUT_SETUP_HOOK: ${{ inputs.setup-hook }}
         INPUT_SOURCE_DIR: ${{ inputs.source-dir }}
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
         INPUT_RUST_VERSION: ${{ inputs.rust-version }}
+        INPUT_RUST_BUILDTOOLS: ${{ inputs.rust-buildtools }}
       id: runner
       run: ${{ github.action_path }}/scripts/run
       shell: bash
