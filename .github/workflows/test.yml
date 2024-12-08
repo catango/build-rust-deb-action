@@ -143,7 +143,7 @@ jobs:
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
 
-  additional-target-build-deps:
+  rust-feature:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
