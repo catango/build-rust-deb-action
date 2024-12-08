@@ -1,21 +1,9 @@
 #!/bin/sh
 
 set -eu
-set -x
-cat global.env
-. ./global.env
+source ./global.env
 
-# Adapted from pbuilder's and sbuild's support for cross-building:
-#if [ -n "$INPUT_TARGET_ARCH" ]; then
-    export PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a $INPUT_TARGET_ARCH -qDEB_HOST_GNU_TYPE)"
-
-	#if [ -z "${CONFIG_SITE-}" ]; then
-	#	 CONFIG_SITE="/etc/dpkg-cross/cross-config.$INPUT_HOST_ARCH"
-	#fi
-	#export DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:+$DEB_BUILD_OPTIONS }nocheck"
-	#export DEB_BUILD_PROFILES="${DEB_BUILD_PROFILES:+$DEB_BUILD_PROFILES }cross nocheck"
-	#INPUT_BUILDPACKAGE_OPTS="$INPUT_BUILDPACKAGE_OPTS --host-arch=$INPUT_HOST_ARCH"
-#fi
+export PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a $INPUT_TARGET_ARCH -qDEB_HOST_GNU_TYPE)"
 
 if [ -n "$INPUT_RUST_FEATURES" ]; then
     INPUT_RUST_FEATURES="-- --features $(echo ${INPUT_RUST_FEATURES} | sed "s/[[:blank:]]*$//;s/ /,/g")"
@@ -24,8 +12,3 @@ fi
 cd -- "$INPUT_SOURCE_DIR"
 # shellcheck disable=SC2086
 cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
-
-#cargo build --release ${RUST_TARGET} ${INPUT_RUST_FEATURES}
-# test without compiling
-#mkdir -p "/github/workspace/${INPUT_SOURCE_DIR}/target/debian"
-#touch "/github/workspace/${INPUT_SOURCE_DIR}/target/debian/test"
