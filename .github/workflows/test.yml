@@ -421,7 +421,8 @@ jobs:
           path: build-rust-deb-action
       - uses: actions/checkout@v4
         with:
-          repository: https://github.com/librespot-org/librespot
+          repository: librespot-org/librespot
+          ref: v0.6.0
           path: librespot
       - uses: ./build-rust-deb-action
         id: build
