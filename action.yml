@@ -13,9 +13,6 @@ inputs:
     default: debian:stable-slim
     description: Name of a Docker image or path of a Dockerfile to use for the build container
     required: true
-  extra-build-deps:
-    description: Extra packages to be installed as build dependencies
-    required: false
   extra-docker-args:
     description: Additional arguments to 'docker run' when starting the build container
     required: false
@@ -68,7 +65,6 @@ runs:
         INPUT_APT_OPTS: ${{ inputs.apt-opts }}
         INPUT_BEFORE_BUILD_HOOK: ${{ inputs.before-build-hook }}
         INPUT_DOCKER_IMAGE: ${{ inputs.docker-image }}
-        INPUT_EXTRA_BUILD_DEPS: ${{ inputs.extra-build-deps }}
         INPUT_EXTRA_DOCKER_ARGS: ${{ inputs.extra-docker-args }}
         INPUT_EXTRA_REPO_KEYS: ${{  inputs.extra-repo-keys }}
         INPUT_EXTRA_REPOS: ${{  inputs.extra-repos }}
