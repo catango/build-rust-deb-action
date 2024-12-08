@@ -55,7 +55,7 @@ printf "%s\n" "$INPUT_EXTRA_REPOS" >"/etc/apt/sources.list.d/build-deb-action${e
 apt-get update
 
 # libclang-14 is required for bindgen-cli support. Bindgen is required to generate native C bindings for some rust projects
-apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essential libclang-14-dev  $INPUT_HOST_BUILD_DEPS
+apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essential libclang-14-dev  $INPUT_HOST_BUILD_DEPS $INPUT_TARGET_BUILD_DEPS
 
 # install rust
 # inspired by official rust docker image 

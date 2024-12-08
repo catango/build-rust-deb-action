@@ -102,7 +102,7 @@ jobs:
           test -f debian/artifacts/test_1_amd64.buildinfo
           test -f debian/artifacts/test_1_amd64.changes
 
-  different-host-arch:
+  different-target-arch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -114,9 +114,8 @@ jobs:
           target-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
-          name: test-artifact-i386
+          name: test-artifact-${{ inputs.target-arch }}
           path: ${{ steps.build.outputs.artifact_dir }}
-
 
   extra-build-deps:
     needs: [single-package]
