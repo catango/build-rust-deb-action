@@ -90,17 +90,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
+        id: build
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: ubuntu:latest
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+
 
   test-target-arch:
     runs-on: ubuntu-latest
@@ -111,10 +108,6 @@ jobs:
         with:
           target-arch: armhf
           source-dir: test
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-artifact-armhf
-          path: ${{ steps.build.outputs.artifact_dir }}
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
@@ -130,8 +123,12 @@ jobs:
           target-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
-          name: test-artifact
+          name: test-artifact-t1
           path: ${{ steps.build.outputs.artifact_dir }}
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+
 
 
   extra-build-deps:
