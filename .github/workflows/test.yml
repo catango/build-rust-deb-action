@@ -93,6 +93,10 @@ jobs:
         with:
           docker-image: ubuntu:latest
           source-dir: test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact-ubuntu
+          path: ${{ steps.build.outputs.artifact_dir }}
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
@@ -150,8 +154,8 @@ jobs:
           rust-version: 1.79.0
           source-dir: test
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   additional-rust-buildtools:
     runs-on: ubuntu-latest
@@ -164,8 +168,8 @@ jobs:
           rust-buildtools: bindgen-cli 
           source-dir: test
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
 
  
