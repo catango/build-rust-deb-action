@@ -155,7 +155,7 @@ jobs:
           target-build-deps: libasound2-dev
       - uses: actions/upload-artifact@v4
         with:
-          name: test-artifact-t1
+          name: test-artifact-alsa
           path: ${{ steps.build.outputs.artifact_dir }}
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
