@@ -117,8 +117,7 @@ jobs:
           path: ${{ steps.build.outputs.artifact_dir }}
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep ./usr/bin/rust-deb-test
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_asdf.deb 
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
 
   test-target-build-deps:
     runs-on: ubuntu-latest
