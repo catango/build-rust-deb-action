@@ -50,7 +50,6 @@ jobs:
           test -f debian/artifacts/test_2_amd64.changes
 
   default-source-dir:
-    needs: [single-package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -143,6 +142,25 @@ jobs:
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
           dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+
+  additional-target-build-deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        id: build
+        with:
+          source-dir: test
+          rust-features: alsa-sys
+          target-build-deps: libasound2-dev
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact-t1
+          path: ${{ steps.build.outputs.artifact_dir }}
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+
 
   different-rust-version:
     runs-on: ubuntu-latest
