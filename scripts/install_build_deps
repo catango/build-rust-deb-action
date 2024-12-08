@@ -29,9 +29,8 @@ cat >"$APT_CONF_FILE" <<-EOF
 EOF
 
 
-RUST_TARGET=''
+#RUST_TARGET=''
 
-if [ -n "$INPUT_HOST_ARCH" ]; then
 	dpkg --add-architecture "$INPUT_HOST_ARCH"
     if [ -n "$INPUT_EXTRA_BUILD_DEPS" ]; then
         INPUT_EXTRA_BUILD_DEPS=$(echo "$INPUT_EXTRA_BUILD_DEPS" | sed "s/[[:blank:]]*$/ /;s/ /:$INPUT_HOST_ARCH /g")
@@ -40,7 +39,6 @@ if [ -n "$INPUT_HOST_ARCH" ]; then
 	printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_HOST_ARCH" >>"$APT_CONF_FILE"
     get_rust_arch $INPUT_HOST_ARCH
     RUST_TARGET="--target ${rustArch}"
-fi
 
 # add rust target to build envs
 echo "RUST_TARGET='${RUST_TARGET}'" >> global.env
@@ -65,17 +63,12 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 # inspired by official rust docker image 
 # https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
 
-# create config
-# build error
-## todo: cteate file in $CARGO_HOME after rust installation
-
-if [ -n "$INPUT_HOST_ARCH" ]; then
-    mkdir "$INPUT_SOURCE_DIR/.cargo"
-    cat <<- EOT >> "$INPUT_SOURCE_DIR/.cargo/config.toml"
+# create rust config
+mkdir "$INPUT_SOURCE_DIR/.cargo"
+cat <<- EOT >> "$INPUT_SOURCE_DIR/.cargo/config.toml"
 [target.${rustArch}]
 linker = "$(dpkg-architecture -a $INPUT_HOST_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
 EOT
-fi
 
 # get rust arch for build system architecture
 get_rust_arch $(dpkg --print-architecture)
@@ -86,7 +79,8 @@ wget "$url"
 echo "${rustupSha256} *rustup-init" | sha256sum -c -
 chmod +x rustup-init
 
-# get target arch for 
+# install Rust via rustup-init
+# rustup-init throws nonblocking errors when installed in a docker containers as root. The error is caused as $HOME directory is not /root but /home/runner.
 ./rustup-init -y --no-modify-path --profile minimal --default-toolchain $INPUT_RUST_VERSION --default-host ${rustArch} $RUST_TARGET
 rm rustup-init
 
