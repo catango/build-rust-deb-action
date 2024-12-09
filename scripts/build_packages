@@ -3,11 +3,13 @@
 set -eu
 . ./global.env
 
-export PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a $INPUT_TARGET_ARCH -qDEB_HOST_GNU_TYPE)"
+
+PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a "$INPUT_TARGET_ARCH" -qDEB_HOST_GNU_TYPE)"
+export PKG_CONFIG_LIBDIR
 
 if [ -n "$INPUT_RUST_FEATURES" ]; then
-    INPUT_RUST_FEATURES="-- --features $(echo ${INPUT_RUST_FEATURES} | sed "s/[[:blank:]]*$//;s/ /,/g")"
+    INPUT_RUST_FEATURES="-- --features $(echo "$INPUT_RUST_FEATURES" | sed "s/[[:blank:]]*$//;s/ /,/g")"
 fi
 
 cd -- "$INPUT_SOURCE_DIR"
-RUST_BACKTRACE=1 cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
+cargo deb --separate-debug-symbols "${RUST_TARGET}" "${INPUT_RUST_FEATURES}"
