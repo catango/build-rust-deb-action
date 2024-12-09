@@ -38,7 +38,7 @@ get_rust_arch $INPUT_TARGET_ARCH
 RUST_TARGET="--target ${rustArch}"
 
 # add rust target to build envs
-echo "RUST_TARGET='${RUST_TARGET}'" >> global.env
+echo "RUST_TARGET='${RUST_TARGET}'" >> build.env
 
 # debconf has priority “required” and is indirectly depended on by some
 # essential packages. It is reasonably safe to blindly assume it is installed.

@@ -1,8 +1,7 @@
 #!/bin/sh
 
 set -eu
-. ./global.env
-
+. ./build.env
 
 PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a "$INPUT_TARGET_ARCH" -qDEB_HOST_GNU_TYPE)"
 export PKG_CONFIG_LIBDIR
@@ -12,4 +11,4 @@ if [ -n "$INPUT_RUST_FEATURES" ]; then
 fi
 
 cd -- "$INPUT_SOURCE_DIR"
-cargo deb --separate-debug-symbols "${RUST_TARGET}" "${INPUT_RUST_FEATURES}"
+cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
