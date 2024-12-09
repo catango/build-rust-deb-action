@@ -1,7 +1,6 @@
 #!/bin/sh
 
 set -eu
-set -x
 
 APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
 CARGO_DEB_VERSION="2.9.3"
@@ -20,7 +19,6 @@ get_rust_arch() {
 }
 
 export DEBIAN_FRONTEND=noninteractive
-
 
 cat >"$APT_CONF_FILE" <<-EOF
 	APT::Get::Assume-Yes "yes";
@@ -54,8 +52,6 @@ fi
 printf "%s\n" "$INPUT_EXTRA_REPOS" >"/etc/apt/sources.list.d/build-deb-action${extra_repos_ext}"
 
 apt-get update
-
-# libclang-14 is required for bindgen-cli support. Bindgen is required to generate native C bindings for some rust projects
 apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essential $BUILD_DEPS
 
 # install rust
@@ -84,8 +80,5 @@ chmod +x rustup-init
 rm rustup-init
 
 # install required rust build tools
-#cargo install bindgen-cli cargo-deb
 cargo install cargo-deb@$CARGO_DEB_VERSION $INPUT_RUST_BUILDTOOLS
-
-
 
