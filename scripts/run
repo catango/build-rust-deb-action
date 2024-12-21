@@ -191,7 +191,7 @@ case "$INPUT_TARGET_ARCH" in
         s390x) rustArch='s390x-unknown-linux-gnu' ;;
         *) echo >&2 "unsupported architecture: ${INPUT_TARGET_ARCH}"; exit 1 ;;
 esac
-echo "output_path=$INPUT_SOURCE_DIR/target/$rustArch/debian" >> $GITHUB_OUTPUT
+echo "output_path=$INPUT_SOURCE_DIR/target/$rustArch/debian" >> "$GITHUB_OUTPUT"
 
 start_group "Installing build dependencies"
 in_container /github/action/scripts/install_build_deps
