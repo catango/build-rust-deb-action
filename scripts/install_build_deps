@@ -35,7 +35,7 @@ fi
 BUILD_DEPS="$INPUT_HOST_BUILD_DEPS $INPUT_TARGET_BUILD_DEPS crossbuild-essential-$INPUT_TARGET_ARCH libc-dev:$INPUT_TARGET_ARCH"
 printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_TARGET_ARCH" >>"$APT_CONF_FILE"
 get_rust_arch $INPUT_TARGET_ARCH
-RUST_TARGET="--target ${rustArch}"
+RUST_TARGET="${rustArch}"
 
 # add rust target to build envs
 echo "RUST_TARGET='${RUST_TARGET}'" >> build.env
