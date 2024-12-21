@@ -13,6 +13,5 @@ fi
 cd -- "$INPUT_SOURCE_DIR"
 echo "Target: ${RUST_TARGET}"
 echo "Features: ${INPUT_RUST_FEATURES}"
-exit 1
 
-cargo deb --separate-debug-symbols ${RUST_TARGET} ${INPUT_RUST_FEATURES}
+cargo deb --separate-debug-symbols "${RUST_TARGET}" "${INPUT_RUST_FEATURES}"
