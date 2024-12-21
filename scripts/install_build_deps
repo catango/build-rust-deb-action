@@ -6,7 +6,7 @@ APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
 CARGO_DEB_VERSION="2.9.3"
 
 get_rust_arch() {
-    local dpkgArch="${1}"
+    dpkgArch="${1}"
     case "${dpkgArch##*-}" in
         amd64) rustArch='x86_64-unknown-linux-gnu'; rustupSha256='6aeece6993e902708983b209d04c0d1dbb14ebb405ddb87def578d41f920f56d' ;;
         armhf) rustArch='armv7-unknown-linux-gnueabihf'; rustupSha256='3c4114923305f1cd3b96ce3454e9e549ad4aa7c07c03aec73d1a785e98388bed' ;;
@@ -38,7 +38,7 @@ get_rust_arch $INPUT_TARGET_ARCH
 RUST_TARGET="--target ${rustArch}"
 
 # add rust target to build envs
-echo "RUST_TARGET='${RUST_TARGET}'" >> build.env
+echo "RUST_TARGET=${RUST_TARGET}" >> build.env
 
 # debconf has priority “required” and is indirectly depended on by some
 # essential packages. It is reasonably safe to blindly assume it is installed.
@@ -66,7 +66,7 @@ linker = "$(dpkg-architecture -a $INPUT_TARGET_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
 EOT
 
 # get rust arch for build system architecture
-get_rust_arch $(dpkg --print-architecture)
+get_rust_arch "$(dpkg --print-architecture)"
 
 # download and prepare rustup-init
 url="https://static.rust-lang.org/rustup/archive/1.27.1/${rustArch}/rustup-init"
