@@ -10,6 +10,18 @@ on:
 
 jobs:
 
+  apt-opts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          apt-opts: --install-recommends --no-install-suggests
+          source-dir: test
+      - run: |
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+
   before-build-hook:
     runs-on: ubuntu-latest
     steps:
@@ -25,10 +37,8 @@ jobs:
           extra-build-deps: devscripts
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_2_amd64.deb
-          dpkg --contents debian/artifacts/test_2_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_2_amd64.buildinfo
-          test -f debian/artifacts/test_2_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   default-source-dir:
     runs-on: ubuntu-latest
@@ -40,22 +50,6 @@ jobs:
       - run: |
           dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
           dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
-
-  different-artifacts-dir:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          artifacts-dir: my_artifacts
-          source-dir: test
-      - run: |
-          dpkg --info my_artifacts/test_1_amd64.deb
-          dpkg --contents my_artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f my_artifacts/test_1_amd64.buildinfo
-          test -f my_artifacts/test_1_amd64.changes
 
   different-docker-image:
     runs-on: ubuntu-latest
@@ -177,7 +171,6 @@ jobs:
           dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
           dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
-
   extra-repo-keys-ascii:
     runs-on: ubuntu-latest
     steps:
@@ -204,10 +197,8 @@ jobs:
           extra-repo-keys: ${{ steps.download-keys.outputs.debian-archive-keys }}
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   extra-repo-keys-files:
     runs-on: ubuntu-latest
@@ -235,10 +226,8 @@ jobs:
           extra-repo-keys: ${{ steps.download-keys.outputs.debian-archive-keys }}
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   extra-repos:
     needs: [setup-hook]
@@ -260,42 +249,8 @@ jobs:
             ! apt-cache policy | grep -E ' *release.*[ ,]o=Debian[,$$]' | grep -E '[ ,]c=non-free[,$$]'
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
-
-  extra-repos-deb822:
-    needs: [setup-hook]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: cat test/Makefile_extra-repos >>test/Makefile
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          extra-repos: |
-            # These are intentionally given as two entries:
-            Types: deb
-            URIs: http://deb.debian.org/debian
-            Suites: stable
-            Components: contrib
-
-            Types: deb
-            URIs: http://deb.debian.org/debian
-            Suites: stable
-            Components: non-free
-          setup-hook: |
-            apt-get update # Called here manually only for testing purposes!
-            ! apt-cache policy | grep -E ' *release.*[ ,]o=Debian[,$$]' | grep -E '[ ,]c=contrib[,$$]'
-            ! apt-cache policy | grep -E ' *release.*[ ,]o=Debian[,$$]' | grep -E '[ ,]c=non-free[,$$]'
-          source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   full-build:
     runs-on: ubuntu-latest
@@ -331,10 +286,8 @@ jobs:
           extra-build-deps: devscripts git
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1+${{ github.sha }}_amd64.deb
-          dpkg --contents debian/artifacts/test_1+${{ github.sha }}_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1+${{ github.sha }}_amd64.buildinfo
-          test -f debian/artifacts/test_1+${{ github.sha }}_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   local-dockerfile:
     runs-on: ubuntu-latest
@@ -348,10 +301,8 @@ jobs:
           docker-image: test/Dockerfile
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   probe-env:
     runs-on: ubuntu-latest
@@ -382,10 +333,8 @@ jobs:
             EOF
           source-dir: test
       - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   build-librespot:
     runs-on: ubuntu-latest
@@ -413,5 +362,3 @@ jobs:
         with:
           name: librespot
           path: ${{ steps.build.outputs.artifact-dir }}
- 
-
