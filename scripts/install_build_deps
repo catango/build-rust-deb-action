@@ -34,7 +34,7 @@ if [ -n "$INPUT_TARGET_BUILD_DEPS" ]; then
 fi
 BUILD_DEPS="$INPUT_HOST_BUILD_DEPS $INPUT_TARGET_BUILD_DEPS crossbuild-essential-$INPUT_TARGET_ARCH libc-dev:$INPUT_TARGET_ARCH"
 printf 'APT::Get::Host-Architecture "%s";\n' "$INPUT_TARGET_ARCH" >>"$APT_CONF_FILE"
-get_rust_arch $INPUT_TARGET_ARCH
+get_rust_arch "${INPUT_TARGET_ARCH}"
 RUST_TARGET="${rustArch}"
 
 # add rust target to build envs
@@ -52,6 +52,8 @@ fi
 printf "%s\n" "$INPUT_EXTRA_REPOS" >"/etc/apt/sources.list.d/build-deb-action${extra_repos_ext}"
 
 apt-get update
+
+# shellcheck disable=SC2086
 apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essential $BUILD_DEPS
 
 # install rust
@@ -62,7 +64,7 @@ apt-get install $INPUT_APT_OPTS -- wget ca-certificates pkg-config build-essenti
 mkdir "$INPUT_SOURCE_DIR/.cargo"
 cat <<- EOT >> "$INPUT_SOURCE_DIR/.cargo/config.toml"
 [target.${rustArch}]
-linker = "$(dpkg-architecture -a $INPUT_TARGET_ARCH -qDEB_HOST_GNU_TYPE)-gcc"
+linker = "$(dpkg-architecture -a "$INPUT_TARGET_ARCH" -qDEB_HOST_GNU_TYPE)-gcc"
 EOT
 
 # get rust arch for build system architecture
