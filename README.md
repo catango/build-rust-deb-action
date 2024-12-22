@@ -9,8 +9,8 @@ It is mainly a shell wrapper around `cargo deb`, using a configurable
 Docker image to install build dependencies in and build packages. Resulting
 .deb files are accessible in an artifacts directory, specified by the output of the action.
 
-cargo deb specific configuration in Cargo.toml is required for proper build. Please read the documentation at
-https://crates.io/crates/cargo-deb.
+cargo deb specific configuration in Cargo.toml is required for proper build. Please read the official 
+[cargo-deb documentation](https://crates.io/crates/cargo-deb).
 
 
 ## Usage
@@ -110,7 +110,7 @@ Optional and empty by default.
 
 #### `target-arch`
 The architecture packages are built for. Cross building is automatically set up for target architecture
-adhering debian best practices.
+adhering debian best practices 
 [in the Debian wiki](https://wiki.debian.org/CrossCompiling#Building_with_dpkg-buildpackage).
 
 Optional and defaults to the amd64.
@@ -141,7 +141,7 @@ especially the `debian/` subdirectory.
 Defaults to the workspace.
 
 #### `rust-features`
-Additional rust package features of the package to be built. 
+Additional rust package features of the package to be built  
 [in the Cargo wiki](https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html).
 
 Optional and empty by default.
