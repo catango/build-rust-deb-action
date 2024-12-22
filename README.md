@@ -1,7 +1,7 @@
 [![Linting](https://github.com/catango/build-rust-deb-action/actions/workflows/lint.yml/badge.svg)](https://github.com/catango/build-rust-deb-action/actions/workflows/lint.yml)
 [![Testing](https://github.com/catango/build-rust-deb-action/actions/workflows/test.yml/badge.svg)](https://github.com/catango/build-rust-deb-action/actions/workflows/test.yml)
 
-# Build Debian Packages GitHub Action
+# Build Rust Debian Packages GitHub Action
 
 This action builds rust Debian packages in a clean, flexible environment.
 
