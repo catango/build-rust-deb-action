@@ -407,6 +407,7 @@ jobs:
           # bindget-cli 0.71 breaks build
           rust-buildtools: bindgen-cli@0.70.1
           rust-features: pulseaudio-backend
+          rust-version: 1.82.0
           source-dir: librespot
       - uses: actions/upload-artifact@v4
         with:
