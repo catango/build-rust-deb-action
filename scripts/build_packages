@@ -12,4 +12,4 @@ if [ -n "$INPUT_RUST_FEATURES" ]; then
     set -- -- --features "${INPUT_RUST_FEATURES}"
 fi
 
-cargo deb --separate-debug-symbols --target "${RUST_TARGET}" "{$@}"
+cargo deb --separate-debug-symbols --target "${RUST_TARGET}" "$@"
