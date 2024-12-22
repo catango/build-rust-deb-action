@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-# load variables, created by install_build_deps
+# shellcheck disable=SC1091 
 . ./build.env
 
 PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a "$INPUT_TARGET_ARCH" -qDEB_HOST_GNU_TYPE)"
@@ -12,4 +12,5 @@ if [ -n "$INPUT_RUST_FEATURES" ]; then
     set -- -- --features "${INPUT_RUST_FEATURES}"
 fi
 
+cd -- "$INPUT_SOURCE_DIR"
 cargo deb --separate-debug-symbols --target "${RUST_TARGET}" "$@"
