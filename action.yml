@@ -51,7 +51,7 @@ inputs:
     required: false
 
 outputs:
-  artifact_dir:
+  artifact-dir:
     description: Build artifacts, including deb file and symbols
     value: ${{ steps.runner.outputs.output_path }}
       

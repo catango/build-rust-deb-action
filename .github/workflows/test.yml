@@ -9,22 +9,6 @@ on:
       - README.md
 
 jobs:
-  apt-opts:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
-        with:
-          apt-opts: --install-recommends --no-install-suggests
-          buildpackage-opts: --build=binary --no-sign
-          source-dir: test
-      - run: |
-          dpkg --info debian/artifacts/test_1_amd64.deb
-          dpkg --contents debian/artifacts/test_1_amd64.deb | grep ./usr/bin/mybin
-          test -f debian/artifacts/test_1_amd64.buildinfo
-          test -f debian/artifacts/test_1_amd64.changes
 
   before-build-hook:
     runs-on: ubuntu-latest
@@ -38,7 +22,6 @@ jobs:
             cd test
             dch --maintmaint --newversion 2 "Version 2"
             dch --maintmaint --release ""
-          buildpackage-opts: --build=binary --no-sign
           extra-build-deps: devscripts
           source-dir: test
       - run: |
@@ -55,8 +38,8 @@ jobs:
       - uses: ./
         id: build
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   different-artifacts-dir:
     runs-on: ubuntu-latest
@@ -67,7 +50,6 @@ jobs:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
           artifacts-dir: my_artifacts
-          buildpackage-opts: --build=binary --no-sign
           source-dir: test
       - run: |
           dpkg --info my_artifacts/test_1_amd64.deb
@@ -87,10 +69,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact-ubuntu
-          path: ${{ steps.build.outputs.artifact_dir }}
+          path: ${{ steps.build.outputs.artifact-dir }}
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
  
   additional-host-build-deps:
     runs-on: ubuntu-latest
@@ -102,8 +84,8 @@ jobs:
           source-dir: test
           host-build-deps: cmake gcc
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifacti-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifacti-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   additional-target-build-deps:
     runs-on: ubuntu-latest
@@ -117,10 +99,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact-t1
-          path: ${{ steps.build.outputs.artifact_dir }}
+          path: ${{ steps.build.outputs.artifact-dir }}
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifacti-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   different-target-arch:
     runs-on: ubuntu-latest
@@ -132,8 +114,8 @@ jobs:
           target-arch: armhf
           source-dir: test
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_armhf.deb
+          dpkg --contents ${{ steps.build.outputs.artifacti-dir }}/rust-deb-test_0.1.0-1_armhf.deb | grep usr/bin/rust-deb-test
 
   rust-feature:
     runs-on: ubuntu-latest
@@ -148,10 +130,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact-alsa
-          path: ${{ steps.build.outputs.artifact_dir }}
+          path: ${{ steps.build.outputs.artifact-dir }}
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
 
   different-rust-version:
@@ -164,8 +146,8 @@ jobs:
           rust-version: 1.79.0
           source-dir: test
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   additional-rust-buildtools:
     runs-on: ubuntu-latest
@@ -178,8 +160,8 @@ jobs:
           rust-buildtools: bindgen-cli 
           source-dir: test
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
   extra-docker-args:
     runs-on: ubuntu-latest
@@ -192,8 +174,8 @@ jobs:
           source-dir: test
           extra-docker-args: --add-host extra-args-test:127.0.0.1
       - run: |
-          dpkg --info ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb
-          dpkg --contents ${{ steps.build.outputs.artifact_dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
+          dpkg --info ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb
+          dpkg --contents ${{ steps.build.outputs.artifact-dir }}/rust-deb-test_0.1.0-1_amd64.deb | grep usr/bin/rust-deb-test
 
 
   extra-repo-keys-ascii:
@@ -216,7 +198,6 @@ jobs:
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: test/Dockerfile_extra-repo-keys
           # An output value instead of an environment variable is used here to
           # not interfere with Docker’s environment down the line.
@@ -248,7 +229,6 @@ jobs:
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: test/Dockerfile_extra-repo-keys
           # An output value instead of an environment variable is used here to
           # not interfere with Docker’s environment down the line.
@@ -270,7 +250,6 @@ jobs:
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           extra-repos: |
             # These are intentionally given as two entries:
             deb http://deb.debian.org/debian stable contrib
@@ -296,7 +275,6 @@ jobs:
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           extra-repos: |
             # These are intentionally given as two entries:
             Types: deb
@@ -328,12 +306,11 @@ jobs:
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=full --no-sign
           source-dir: test
       - uses: actions/upload-artifact@v4
         with:
           name: test-artifact
-          path: ${{ steps.build.outputs.artifact_dir }}
+          path: ${{ steps.build.outputs.artifact-dir }}
 
   git-as-root-in-hook:
     needs: [before-build-hook]
@@ -351,7 +328,6 @@ jobs:
             rev=$(git rev-parse HEAD)
             dch --maintmaint --newversion "1+$rev" "Version 1+$rev"
             dch --maintmaint --release ""
-          buildpackage-opts: --build=binary --no-sign
           extra-build-deps: devscripts git
           source-dir: test
       - run: |
@@ -369,7 +345,6 @@ jobs:
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
           docker-image: test/Dockerfile
           source-dir: test
       - run: |
@@ -405,7 +380,6 @@ jobs:
             Pin: release o=Debian
             Pin-Priority: 666
             EOF
-          buildpackage-opts: --build=binary --no-sign
           source-dir: test
       - run: |
           dpkg --info debian/artifacts/test_1_amd64.deb
@@ -437,6 +411,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: librespot
-          path: ${{ steps.build.outputs.artifact_dir }}
+          path: ${{ steps.build.outputs.artifact-dir }}
  
 
