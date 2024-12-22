@@ -1,4 +1,0 @@
-
-.PHONY: test
-test:
-	apt-cache policy | grep -x " 666 http://deb.debian.org/debian stable/main $$(dpkg --print-architecture) Packages"

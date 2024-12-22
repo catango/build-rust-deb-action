@@ -1,4 +1,0 @@
-
-.PHONY: test
-test:
-	test "$$(awk '$$2 == "extra-args-test" { print $$1 }' /etc/hosts)" = "127.0.0.1"

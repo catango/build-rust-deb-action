@@ -1,4 +1,0 @@
-
-.PHONY: test
-test:
-	test -f /var/lib/Dockerfile-was-here
