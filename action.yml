@@ -44,9 +44,8 @@ inputs:
     description: optional features the rust package shall be built with
     required: false
   rust-version:
-    default: 1.82.0
-    description: Rust version for build
-    required: true
+    description: optional rust version for build
+    required: false 
   rust-buildtools:
     description: optional additional rust build tools to be installed from the crates.io. Cargo deb is installed by default. 
     required: false
