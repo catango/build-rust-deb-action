@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        id: build
         with:
           apt-opts: --install-recommends --no-install-suggests
           source-dir: test
@@ -27,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -236,6 +238,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: cat test/Makefile_extra-repos >>test/Makefile
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -273,6 +276,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -295,6 +299,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: cat test/Makefile_local-dockerfile >> test/Makefile
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
@@ -322,6 +327,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: cat test/Makefile_setup-hook >>test/Makefile
       - uses: ./
+        id: build
         env:
           DEB_BUILD_OPTIONS: noautodbgsym
         with:
