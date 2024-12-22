@@ -78,7 +78,12 @@ chmod +x rustup-init
 
 # install Rust via rustup-init
 # rustup-init throws nonblocking errors when installed in a docker containers as root. The error is caused as $HOME directory is not /root but /home/runner.
-./rustup-init -y --no-modify-path --profile minimal --default-toolchain "$INPUT_RUST_VERSION" --default-host ${rustArch} --target "$RUST_TARGET"
+
+if [ -n "$INPUT_RUST_VERSION" ]; then
+    set -- --default-toolchain "${INPUT_RUST_VERSION}"
+fi
+
+./rustup-init -y --no-modify-path --profile minimal "$@" --default-host "${rustArch}" --target "$RUST_TARGET"
 rm rustup-init
 
 # install required rust build tools
