@@ -9,7 +9,7 @@ export PKG_CONFIG_LIBDIR
 
 if [ -n "$INPUT_RUST_FEATURES" ]; then
     INPUT_RUST_FEATURES="-- --features $(echo "$INPUT_RUST_FEATURES" | sed "s/[[:blank:]]*$//;s/ /,/g")"
-    set -- -- --features "${INPUT_RUST_FEATURES}"
+    set -- --features "${INPUT_RUST_FEATURES}"
 fi
 
 cd -- "$INPUT_SOURCE_DIR"
