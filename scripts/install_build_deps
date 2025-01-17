@@ -88,5 +88,4 @@ rm rustup-init
 
 # install required rust build tools
 # shellcheck disable=SC2086
-cargo install cargo-deb@$CARGO_DEB_VERSION $INPUT_RUST_BUILDTOOLS
-
+cargo install --force --locked cargo-deb@$CARGO_DEB_VERSION $INPUT_RUST_BUILDTOOLS

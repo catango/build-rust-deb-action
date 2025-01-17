@@ -361,8 +361,7 @@ jobs:
           host-build-deps: libclang-14-dev cmake
           target-build-deps: libpulse-dev libasound2-dev
           target-arch: armhf
-          # bindget-cli 0.71 breaks build
-          rust-buildtools: bindgen-cli@0.70.1
+          rust-buildtools: bindgen-cli
           rust-features: pulseaudio-backend
           rust-version: 1.82.0
           source-dir: librespot

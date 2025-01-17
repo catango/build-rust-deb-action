@@ -7,10 +7,12 @@ set -eu
 PKG_CONFIG_LIBDIR="/usr/lib/$(dpkg-architecture -a "$INPUT_TARGET_ARCH" -qDEB_HOST_GNU_TYPE)"
 export PKG_CONFIG_LIBDIR
 
+cd -- "$INPUT_SOURCE_DIR"
+cargo fetch --locked
+
 if [ -n "$INPUT_RUST_FEATURES" ]; then
     INPUT_RUST_FEATURES="$(echo "$INPUT_RUST_FEATURES" | sed "s/[[:blank:]]*$//;s/ /,/g")"
-    set -- -- --features "${INPUT_RUST_FEATURES}"
+    set -- -- --features "${INPUT_RUST_FEATURES}" --frozen
 fi
 
-cd -- "$INPUT_SOURCE_DIR"
 cargo deb --separate-debug-symbols --target "${RUST_TARGET}" "$@"
