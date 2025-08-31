@@ -323,6 +323,18 @@ jobs:
       - run: |
           test "${{ steps.build-deb.outcome }}" = 'failure'
 
+  test-rust-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        continue-on-error: true
+        id: check-rust
+        with:
+          rust-version: 1.70.0
+      - run: |
+          test "${{ steps.check-rust.outcome }}" = 'failure'
+
   setup-hook:
     runs-on: ubuntu-latest
     steps:

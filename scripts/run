@@ -65,6 +65,10 @@ extra_repo_keys_file=$build_dir/build-deb-action.asc
 extra_repo_key_files_file=$build_dir/extra_repo_key_files
 gitconfig_file=$build_dir/gitconfig
 
+if [ "$(printf '%s\n' "${MIN_RUST_VERSION}" "${INPUT_RUST_VERSION}" | sort -V | head -n1)" != "${MIN_RUST_VERSION}" ]; then
+    die 2 "Rust version is lower than minimum version ${MIN_RUST_VERSION}"
+fi
+
 INPUT_SOURCE_DIR=${INPUT_SOURCE_DIR:-.}
 if ! check_path_prefix "$INPUT_SOURCE_DIR" "$GITHUB_WORKSPACE"; then
 	die 2 "source-dir is not in GITHUB_WORKSPACE"

@@ -76,6 +76,9 @@ runs:
         INPUT_RUST_FEATURES: ${{ inputs.rust-features }}
         INPUT_RUST_VERSION: ${{ inputs.rust-version }}
         INPUT_RUST_BUILDTOOLS: ${{ inputs.rust-buildtools }}
+        # minimum Rust version aligns to minimum version, required to build cargo-deb
+        # https://crates.io/crates/cargo-deb
+        MIN_RUST_VERSION: 1.71.0
       id: runner
       run: ${{ github.action_path }}/scripts/run
       shell: bash
