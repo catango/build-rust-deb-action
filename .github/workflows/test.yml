@@ -152,7 +152,7 @@ jobs:
       - uses: ./
         id: build
         with:
-          host-build-deps: libclang-14-dev
+          host-build-deps: libclang-17-dev
           rust-buildtools: bindgen-cli 
           source-dir: test
       - run: |
@@ -365,6 +365,7 @@ jobs:
           rust-features: pulseaudio-backend
           rust-version: 1.82.0
           source-dir: librespot
+          docker-image: debian:oldstable-slim
       - uses: actions/upload-artifact@v4
         with:
           name: librespot
