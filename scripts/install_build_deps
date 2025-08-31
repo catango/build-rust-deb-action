@@ -5,6 +5,8 @@ set -eu
 APT_CONF_FILE=/etc/apt/apt.conf.d/50build-deb-action
 CARGO_DEB_VERSION="2.9.3"
 
+# Checksums must be aligned with recent rust version and can be used from docker file from official rust docker image
+# https://github.com/rust-lang/docker-rust/blob/1700955b94ae8a589562d872da74353028fffcf3/stable/bookworm/slim/Dockerfile
 get_rust_arch() {
     dpkgArch="${1}"
     case "${dpkgArch##*-}" in
@@ -26,6 +28,8 @@ cat >"$APT_CONF_FILE" <<-EOF
 	Acquire::Languages "none";
 	quiet "yes";
 EOF
+
+cat /etc/os-release
 
 # install build architecture
 dpkg --add-architecture "$INPUT_TARGET_ARCH"
