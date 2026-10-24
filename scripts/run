@@ -193,6 +193,7 @@ case "$INPUT_TARGET_ARCH" in
         i386) rustArch='i686-unknown-linux-gnu' ;;
         ppc64el) rustArch='powerpc64le-unknown-linux-gnu' ;;
         s390x) rustArch='s390x-unknown-linux-gnu' ;;
+        riscv64)  rustArch='riscv64gc-unknown-linux-gnu' ;;
         *) echo >&2 "unsupported architecture: ${INPUT_TARGET_ARCH}"; exit 1 ;;
 esac
 echo "output_path=$INPUT_SOURCE_DIR/target/$rustArch/debian" >> "$GITHUB_OUTPUT"

@@ -44,7 +44,7 @@ inputs:
     description: optional features the rust package shall be built with
     required: false
   rust-version:
-    default: 1.89.0
+    default: 1.99.1
     description: optional rust version for build
     required: false 
   rust-buildtools:
